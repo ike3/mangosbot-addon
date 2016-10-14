@@ -177,8 +177,8 @@ function CreateBotRoster()
     for i = 1,10 do
         local item = CreateFrame("Frame", "BotRoster_Item" .. i, frame)
         item:SetPoint("TOPLEFT", frame, "TOPLEFT", i * 100, 0)
-        item:SetWidth(100)
-        item:SetHeight(45)
+        item:SetWidth(80)
+        item:SetHeight(40)
         item:SetBackdropColor(0,0,0,1)
         item:SetBackdrop({
             bgFile = "Interface/DialogFrame/UI-DialogBox-Background",
@@ -189,7 +189,7 @@ function CreateBotRoster()
         item:SetBackdropBorderColor(0.8,0.8,0.8,1)
         
         item.text = item:CreateFontString("BotRoster_ItemHeader" .. i)
-        item.text:SetPoint("TOPLEFT", item, "TOPLEFT", 22, 0)
+        item.text:SetPoint("TOPLEFT", item, "TOPLEFT", 20, 1)
         item.text:SetWidth(item:GetWidth())
         item.text:SetHeight(22)
         item.text:SetFont("Fonts/FRIZQT__.TTF", 11, "OUTLINE")
@@ -205,7 +205,7 @@ function CreateBotRoster()
         cls.texture:SetAllPoints()
         item.cls = cls
 
-        CreateToolBar(item, -20, "quickbar"..i, {
+        CreateToolBar(item, -18, "quickbar"..i, {
             ["login"] = {
                 icon = "login",
                 command = {[0] = ""},
@@ -942,19 +942,19 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self, event, ...)
                 item:Show()
                 
                 index = index + 1
-                x = x + (10 + item:GetWidth())
+                x = x + (5 + item:GetWidth())
                 height = item:GetHeight()
                 if (width < x) then width = x end
                 if ((index - 1) % colCount == 0) then 
-                    y = y + (10 + height)
+                    y = y + (5 + height)
                     x = 5
                 end
             end
             if ((index - 1) % colCount ~= 0) then 
-                y = y + (10 + height)
+                y = y + (5 + height)
             end
-            BotRoster:SetWidth(width - 5)
-            BotRoster:SetHeight(y - 5)
+            BotRoster:SetWidth(width)
+            BotRoster:SetHeight(y)
         end
     end
     
