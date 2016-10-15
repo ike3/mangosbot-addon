@@ -233,6 +233,13 @@ function CreateBotRoster()
                 tooltip = "Remove from group",
                 strategy = "",
                 index = 1
+            },
+            ["whisper"] = {
+                icon = "whisper",
+                command = {[0] = ""},
+                tooltip = "Start whisper chat",
+                strategy = "",
+                index = 2
             }
         }, 20, 0, false)
         local tb = item.toolbar["quickbar"..i]
@@ -241,6 +248,7 @@ function CreateBotRoster()
         tb.buttons["logout"]:SetPoint("TOPLEFT", tb, "TOPLEFT", 0, 0)
         tb.buttons["invite"]:SetPoint("TOPLEFT", tb, "TOPLEFT", 16, 0)
         tb.buttons["leave"]:SetPoint("TOPLEFT", tb, "TOPLEFT", 16, 0)
+        tb.buttons["whisper"]:SetPoint("TOPLEFT", tb, "TOPLEFT", 32, 0)
         
         item:Hide()
         frame.items[i] = item
@@ -911,9 +919,12 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self, event, ...)
                 inviteBtn:Show()
                 local leaveBtn = item.toolbar["quickbar"..index].buttons["leave"]
                 leaveBtn:Hide()
+                local whisperBtn = item.toolbar["quickbar"..index].buttons["whisper"]
+                whisperBtn:Hide()
                 if (bot["online"]) then
                     item:SetBackdropBorderColor(0.2, 1.0, 0.2, 1.0)
                     logoutBtn:Show()
+                    whisperBtn:Show()
                     for i = 1,5 do
                         if (UnitName("party"..i) == key) then
                             inviteBtn:Hide()
@@ -936,6 +947,12 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self, event, ...)
                 end)
                 leaveBtn:SetScript("OnClick", function()
                     SendChatMessage("leave", "WHISPER", nil, key)
+                end)
+                whisperBtn:SetScript("OnClick", function()
+                    local editBox = _G["ChatFrame1EditBox"]
+                    editBox:Show()
+                    editBox:SetFocus()
+                    editBox:SetText("/w " .. key .. " ")
                 end)
                 
                 
@@ -1081,6 +1098,7 @@ end
 
 function OnSystemMessage(message)
     if (string.find(message, 'Bot roster: ') == 1) then
+        botTable = {}
         for i in string.gmatch(string.sub(message, 13), "([^,]+)") do
             local line = trim2(i)
             local on = string.sub(line, 1, 1)
