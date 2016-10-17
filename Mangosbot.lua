@@ -670,7 +670,7 @@ function CreateSelectedBotPanel()
         },
         ["bmana"] = {
             icon = "bmana",
-            command = {[0] = "co ~bmana,?"},
+            command = {[0] = "co ~bmana,?", [1] = "nc ~bmana,?"},
             strategy = "bmana",
             tooltip = "Buff mana regen",
             index = 2
@@ -702,6 +702,13 @@ function CreateSelectedBotPanel()
             strategy = "bspeed",
             tooltip = "Buff movement speed",
             index = 6
+        },
+        ["bthreat"] = {
+            icon = "bthreat",
+            command = {[0] = "co ~bthreat,?", [1] = "nc ~bthreat,?"},
+            strategy = "bthreat",
+            tooltip = "Buff threat generation",
+            index = 7
         }
     })
     CreateToolBar(frame, -y, "CLASS_PRIEST", {
