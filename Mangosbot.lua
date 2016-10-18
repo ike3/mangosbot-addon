@@ -882,13 +882,14 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self, event, ...)
     -- print(event)
     if (event == "PLAYER_TARGET_CHANGED") then
         local name = GetUnitName("target")
-        if (name == nil or not UnitIsPlayer("target")) then
+        local self = GetUnitName("player")
+        if (name == nil or not UnitIsPlayer("target") or name == self or UnitIsEnemy(self, name)) then
             SelectedBotPanel:Hide()
         else 
-            SendChatMessage("nc ?", "WHISPER", nil, name)
-            SendChatMessage("co ?", "WHISPER", nil, name)
-            SendChatMessage("formation ?", "WHISPER", nil, name)
-            SendChatMessage("rti ?", "WHISPER", nil, name)
+            wait(0.1, function() SendChatMessage("nc ?", "WHISPER", nil, name) end)
+            wait(0.2, function() SendChatMessage("co ?", "WHISPER", nil, name) end)
+            wait(0.3, function() SendChatMessage("formation ?", "WHISPER", nil, name) end)
+            wait(0.4, function() SendChatMessage("rti ?", "WHISPER", nil, name) end)
         end
     end
         
@@ -993,7 +994,7 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self, event, ...)
         end
         
         local bot = botTable[sender]
-        if (bot == nil or bot["strategy"] == nil) then 
+        if (bot == nil or bot["strategy"] == nil or bot["role"] == nil) then 
             SelectedBotPanel:Hide()
             return 
         end
@@ -1054,13 +1055,13 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self, event, ...)
             ResizeBotPanel(SelectedBotPanel, width * 25 + 20, height * 25 + 25)
             
             if (string.find(message, "Following") == 1 or string.find(message, "Staying") == 1 or string.find(message, "Fleeing") == 1) then
-                SendChatMessage("nc ?", "WHISPER", nil, sender)
+                wait(0.1, function() SendChatMessage("nc ?", "WHISPER", nil, sender) end)
             end
             if (string.find(message, "Formation set to") == 1) then
-                SendChatMessage("formation ?", "WHISPER", nil, sender)
+                wait(0.1, function() SendChatMessage("formation ?", "WHISPER", nil, sender) end)
             end
             if (string.find(message, "RTI set to") == 1) then
-                SendChatMessage("rti ?", "WHISPER", nil, sender)
+                wait(0.1, function() SendChatMessage("rti ?", "WHISPER", nil, sender) end)
             end
         end        
     end
@@ -1136,5 +1137,35 @@ function SlashCmdList.MANGOSBOT(msg, editbox) -- 4.
     end
 end
 
+local waitTable = {};
+local waitFrame = nil;
+
+function wait(delay, func, ...)
+  if(type(delay)~="number" or type(func)~="function") then
+    return false;
+  end
+  if(waitFrame == nil) then
+    waitFrame = CreateFrame("Frame","WaitFrame", UIParent);
+    waitFrame:SetScript("onUpdate",function (self,elapse)
+      local count = #waitTable;
+      local i = 1;
+      while(i<=count) do
+        local waitRecord = tremove(waitTable,i);
+        local d = tremove(waitRecord,1);
+        local f = tremove(waitRecord,1);
+        local p = tremove(waitRecord,1);
+        if(d>elapse) then
+          tinsert(waitTable,i,{d-elapse,f,p});
+          i = i + 1;
+        else
+          count = count - 1;
+          f(unpack(p));
+        end
+      end
+    end);
+  end
+  tinsert(waitTable,{delay,func,{...}});
+  return true;
+end
 
 print("MangosBOT Addon is loaded"); 
