@@ -254,6 +254,39 @@ function CreateBotRoster()
         frame.items[i] = item
     end
 
+    CreateToolBar(frame, 0, "quickbar", {
+        ["login_all"] = {
+            icon = "login",
+            command = {[0] = ""},
+            strategy = "",
+            tooltip = "Bring all bots online",
+            index = 0
+        },
+        ["logout_all"] = {
+            icon = "logout",
+            command = {[0] = ""},
+            tooltip = "Logout all bots",
+            strategy = "",
+            index = 1
+        },
+        ["invite_all"] = {
+            icon = "invite",
+            command = {[0] = ""},
+            tooltip = "Invite all bots to your group",
+            strategy = "",
+            index = 2
+        },
+        ["leave_all"] = {
+            icon = "leave",
+            command = {[0] = ""},
+            tooltip = "Remove all bots from group",
+            strategy = "",
+            index = 3
+        }
+    }, 5, 0, false)
+    local tb = frame.toolbar["quickbar"]
+    tb:SetBackdropBorderColor(0,0,0,0.0)
+    
     return frame
 end
 
@@ -906,8 +939,17 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self, event, ...)
             local height = 0
             local y = 5
             local colCount = 2
+            local allBots = ""
+            local first = true
+            local allBotsLoggedIn = true
+            local allBotsLoggedOut = true
+            local allBotsInParty = true
+            local atLeastOneBotInParty = false
             for key,bot in pairs(botTable) do
                 local item = BotRoster.items[index]
+                if (first) then first = false
+                else allBots = allBots .. "," end
+                allBots = allBots .. key
                 
                 item.text:SetText(key)
                 
@@ -933,16 +975,22 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self, event, ...)
                     item:SetBackdropBorderColor(0.2, 1.0, 0.2, 1.0)
                     logoutBtn:Show()
                     whisperBtn:Show()
+                    local inParty = false
                     for i = 1,5 do
                         if (UnitName("party"..i) == key) then
                             inviteBtn:Hide()
                             leaveBtn:Show()
+                            atLeastOneBotInParty = true
+                            inParty = true
                         end
                     end
+                    if (not inParty) then allBotsInParty = false end
+                    allBotsLoggedOut = false
                 else
                     item:SetBackdropBorderColor(0.4,0.4,0.4,1)
                     loginBtn:Show()
                     inviteBtn:Hide()
+                    allBotsLoggedIn = false
                 end
                 loginBtn:SetScript("OnClick", function()
                     SendChatMessage(".bot add " .. key, "SAY")
@@ -979,7 +1027,67 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self, event, ...)
                 y = y + (5 + height)
             end
             BotRoster:SetWidth(width)
-            BotRoster:SetHeight(y)
+            BotRoster:SetHeight(y + 22)
+            
+            local tb = BotRoster.toolbar["quickbar"]
+            tb:SetPoint("TOPLEFT", BotRoster, "TOPLEFT", 5, -y)
+            local loginAllBtn = tb.buttons["login_all"]
+            x = 0
+            loginAllBtn:SetPoint("TOPLEFT", tb, "TOPLEFT", x, 0)
+            if (not allBotsLoggedIn) then 
+                loginAllBtn:Show() 
+                x = x + 16
+            else 
+                loginAllBtn:Hide() 
+            end
+            loginAllBtn:SetScript("OnClick", function()
+                SendChatMessage(".bot add " .. allBots, "SAY")
+            end)
+            
+            local logoutAllBtn = tb.buttons["logout_all"]
+            logoutAllBtn:SetPoint("TOPLEFT", tb, "TOPLEFT", x, 0)
+            if (not allBotsLoggedOut) then 
+                logoutAllBtn:Show() 
+                x = x + 16
+            else 
+                logoutAllBtn:Hide() 
+            end
+            logoutAllBtn:SetScript("OnClick", function()
+                SendChatMessage(".bot rm " .. allBots, "SAY")
+            end)
+            
+            local inviteAllBtn = tb.buttons["invite_all"]
+            inviteAllBtn:SetPoint("TOPLEFT", tb, "TOPLEFT", x, 0)
+            if (not allBotsInParty) then 
+                inviteAllBtn:Show() 
+                x = x + 16
+            else 
+                inviteAllBtn:Hide() 
+            end
+            inviteAllBtn:SetScript("OnClick", function()
+                local timeout = 0.1
+                for key,bot in pairs(botTable) do
+                    wait(timeout, function() InviteUnit(key) end)
+                    timeout = timeout + 0.1
+                end
+                wait(1, function() SendChatMessage(".bot list", "SAY") end)
+            end)
+            
+            local leaveAllBtn = tb.buttons["leave_all"]
+            leaveAllBtn:SetPoint("TOPLEFT", tb, "TOPLEFT", x, 0)
+            if (atLeastOneBotInParty) then 
+                leaveAllBtn:Show() 
+                x = x + 16
+            else 
+                leaveAllBtn:Hide() 
+            end
+            leaveAllBtn:SetScript("OnClick", function()
+                local timeout = 0.1
+                for key,bot in pairs(botTable) do
+                    wait(timeout, function() SendChatMessage("leave", "WHISPER", nil, key) end)
+                    timeout = timeout + 0.1
+                end
+            end)
         end
     end
     
