@@ -6,6 +6,7 @@ Mangosbot_EventFrame:RegisterEvent("UPDATE")
 Mangosbot_EventFrame:Hide()
 
 local ToolBars = {}
+local GroupToolBars = {}
 function CreateToolBar(frame, y, name, buttons, x, spacing, register)
     if (x == nil) then x = 5 end
     if (spacing == nil) then spacing = 5 end
@@ -51,8 +52,14 @@ function CreateToolBar(frame, y, name, buttons, x, spacing, register)
         end)
         btn:SetScript("OnClick", function()
             btn:SetBackdropBorderColor(0.8, 0.2, 0.2, 1.0)
-            for key, command in pairs(button["command"]) do
-                SendChatMessage(command, "WHISPER", nil, GetUnitName("target"))
+            if (button["group"]) then
+                for key, command in pairs(button["command"]) do
+                    SendChatMessage(command, "PARTY")
+                end
+            else
+                for key, command in pairs(button["command"]) do
+                    SendChatMessage(command, "WHISPER", nil, GetUnitName("target"))
+                end
             end
         end)
         
@@ -73,6 +80,7 @@ function CreateToolBar(frame, y, name, buttons, x, spacing, register)
     if (register) then
         ToolBars[name] = buttons
     end
+    return buttons
 end
 
 function ToggleButton(frame, toolbar, button, toggle)
@@ -157,7 +165,7 @@ function CreateBotRoster()
     local frame = CreateFrame("Frame", "BotRoster", UIParent)
     frame:Hide()
     frame:SetWidth(170)
-    frame:SetHeight(155)
+    frame:SetHeight(175)
     frame:SetPoint("CENTER", UIParent, "CENTER")
     frame:EnableMouse(true)
     frame:SetMovable(true)
@@ -284,10 +292,126 @@ function CreateBotRoster()
             index = 3
         }
     }, 5, 0, false)
-    local tb = frame.toolbar["quickbar"]
-    tb:SetBackdropBorderColor(0,0,0,0.0)
+    frame.toolbar["quickbar"]:SetBackdropBorderColor(0,0,0,0.0)
+    
+    GroupToolBars["group_formation"] = CreateFormationToolBar(frame, 0, "group_formation", true, 5, 0, false)
+    frame.toolbar["group_formation"]:SetBackdropBorderColor(0,0,0,0.0)
     
     return frame
+end
+
+function CreateRtiToolBar(frame, y, name, group, x, spacing, register)
+    return CreateToolBar(frame, -y, name, {
+        ["rti_skull"] = {
+            icon = "rti_skull",
+            command = {[0] = "rti skull"},
+            rti = "skull",
+            tooltip = "Assign skull mark",
+            index = 0,
+            group = group
+        },
+        ["rti_cross"] = {
+            icon = "rti_cross",
+            command = {[0] = "rti cross"},
+            rti = "cross",
+            tooltip = "Assign cross mark",
+            index = 1,
+            group = group
+        },
+        ["rti_circle"] = {
+            icon = "rti_circle",
+            command = {[0] = "rti circle"},
+            rti = "circle",
+            tooltip = "Assign circle mark",
+            index = 2,
+            group = group
+        },
+        ["rti_star"] = {
+            icon = "rti_star",
+            command = {[0] = "rti star"},
+            rti = "star",
+            tooltip = "Assign star mark",
+            index = 3,
+            group = group
+        },
+        ["rti_square"] = {
+            icon = "rti_square",
+            command = {[0] = "rti square"},
+            rti = "square",
+            tooltip = "Assign square mark",
+            index = 4,
+            group = group
+        },
+        ["rti_triangle"] = {
+            icon = "rti_triangle",
+            command = {[0] = "rti triangle"},
+            rti = "triangle",
+            tooltip = "Assign triangle mark",
+            index = 5,
+            group = group
+        },
+        ["rti_diamond"] = {
+            icon = "rti_diamond",
+            command = {[0] = "rti diamond"},
+            rti = "diamond",
+            tooltip = "Assign diamond mark",
+            index = 6,
+            group = group
+        },
+        ["rti_moon"] = {
+            icon = "rti_moon",
+            command = {[0] = "rti moon"},
+            rti = "moon",
+            tooltip = "Assign moon mark",
+            index = 7,
+            group = group
+        }
+    }, x, spacing, register)
+end
+
+function CreateFormationToolBar(frame, y, name, group, x, spacing, register)
+    return CreateToolBar(frame, -y, name, {
+        ["near"] = {
+            icon = "formation_near",
+            command = {[0] = "formation near"},
+            formation = "near",
+            tooltip = "Follow main character",
+            index = 0,
+            group = group
+        },
+        ["melee"] = {
+            icon = "formation_melee",
+            command = {[0] = "formation melee"},
+            formation = "melee",
+            tooltip = "Melee formation",
+            index = 1,
+            group = group
+        },
+        ["line"] = {
+            icon = "formation_line",
+            command = {[0] = "formation line"},
+            formation = "line",
+            tooltip = "Form a line",
+            index = 2,
+            group = group
+        },
+        ["circle"] = {
+            icon = "formation_circle",
+            command = {[0] = "formation circle"},
+            formation = "circle",
+            tooltip = "Form a big circle",
+            index = 3,
+            group = group
+        },
+        ["arrow"] = {
+            icon = "formation_arrow",
+            command = {[0] = "formation arrow"},
+            formation = "arrow",
+            tooltip = "Tank first, dps last",
+            index = 4,
+            group = group
+        }
+    }, x, spacing, register)
 end
 
 function CreateSelectedBotPanel()
@@ -405,43 +529,7 @@ function CreateSelectedBotPanel()
     })
     
     y = y + 25
-    CreateToolBar(frame, -y, "formation", {
-        ["near"] = {
-            icon = "formation_near",
-            command = {[0] = "formation near"},
-            formation = "near",
-            tooltip = "Follow main character",
-            index = 0
-        },
-        ["melee"] = {
-            icon = "formation_melee",
-            command = {[0] = "formation melee"},
-            formation = "melee",
-            tooltip = "Melee formation",
-            index = 1
-        },
-        ["line"] = {
-            icon = "formation_line",
-            command = {[0] = "formation line"},
-            formation = "line",
-            tooltip = "Form a line",
-            index = 2
-        },
-        ["circle"] = {
-            icon = "formation_circle",
-            command = {[0] = "formation circle"},
-            formation = "circle",
-            tooltip = "Form a big circle",
-            index = 3
-        },
-        ["arrow"] = {
-            icon = "formation_arrow",
-            command = {[0] = "formation arrow"},
-            formation = "arrow",
-            tooltip = "Tank first, dps last",
-            index = 4
-        }
-    })
+    CreateFormationToolBar(frame, y, "formation", false, 5, 5, true)
         
     y = y + 25
     CreateToolBar(frame, -y, "attack_type", {
@@ -490,64 +578,7 @@ function CreateSelectedBotPanel()
     })
 
     y = y + 25
-    CreateToolBar(frame, -y, "rti", {
-        ["rti_skull"] = {
-            icon = "rti_skull",
-            command = {[0] = "rti skull"},
-            rti = "skull",
-            tooltip = "Assign skull mark",
-            index = 0
-        },
-        ["rti_cross"] = {
-            icon = "rti_cross",
-            command = {[0] = "rti cross"},
-            rti = "cross",
-            tooltip = "Assign cross mark",
-            index = 1
-        },
-        ["rti_circle"] = {
-            icon = "rti_circle",
-            command = {[0] = "rti circle"},
-            rti = "circle",
-            tooltip = "Assign circle mark",
-            index = 2
-        },
-        ["rti_star"] = {
-            icon = "rti_star",
-            command = {[0] = "rti star"},
-            rti = "star",
-            tooltip = "Assign star mark",
-            index = 3
-        },
-        ["rti_square"] = {
-            icon = "rti_square",
-            command = {[0] = "rti square"},
-            rti = "square",
-            tooltip = "Assign square mark",
-            index = 4
-        },
-        ["rti_triangle"] = {
-            icon = "rti_triangle",
-            command = {[0] = "rti triangle"},
-            rti = "triangle",
-            tooltip = "Assign triangle mark",
-            index = 5
-        },
-        ["rti_diamond"] = {
-            icon = "rti_diamond",
-            command = {[0] = "rti diamond"},
-            rti = "diamond",
-            tooltip = "Assign diamond mark",
-            index = 6
-        },
-        ["rti_moon"] = {
-            icon = "rti_moon",
-            command = {[0] = "rti moon"},
-            rti = "moon",
-            tooltip = "Assign moon mark",
-            index = 7
-        }
-    })
+    CreateRtiToolBar(frame, y, "rti", false, 5, 5, true)
     
     y = y + 25
     CreateToolBar(frame, -y, "generic", {
@@ -1026,8 +1057,6 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self, event, ...)
             if ((index - 1) % colCount ~= 0) then 
                 y = y + (5 + height)
             end
-            BotRoster:SetWidth(width)
-            BotRoster:SetHeight(y + 22)
             
             local tb = BotRoster.toolbar["quickbar"]
             tb:SetPoint("TOPLEFT", BotRoster, "TOPLEFT", 5, -y)
@@ -1088,6 +1117,19 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self, event, ...)
                     timeout = timeout + 0.1
                 end
             end)
+            
+            local formationToolBar = BotRoster.toolbar["group_formation"]
+            if (atLeastOneBotInParty) then 
+                formationToolBar:Show()
+                y = y + 22
+                formationToolBar:SetPoint("TOPLEFT", BotRoster, "TOPLEFT", 5, -y)
+            else
+                formationToolBar:Hide()
+            end
+            
+            UpdateGroupToolBar()
+            BotRoster:SetWidth(width)
+            BotRoster:SetHeight(y + 22)
         end
     end
     
@@ -1099,7 +1141,18 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self, event, ...)
         
         if (string.find(message, "Hello") == 1 or string.find(message, "Goodbye") == 1) then
             SendChatMessage(".bot list", "SAY")
+            SendChatMessage("formation ?", "PARTY")
         end
+        if (string.find(message, "Following") == 1 or string.find(message, "Staying") == 1 or string.find(message, "Fleeing") == 1) then
+            wait(0.1, function() SendChatMessage("nc ?", "WHISPER", nil, sender) end)
+        end
+        if (string.find(message, "Formation set to") == 1) then
+            wait(0.1, function() SendChatMessage("formation ?", "WHISPER", nil, sender) end)
+        end
+        if (string.find(message, "RTI set to") == 1) then
+            wait(0.1, function() SendChatMessage("rti ?", "WHISPER", nil, sender) end)
+        end
+        UpdateGroupToolBar()
         
         local bot = botTable[sender]
         if (bot == nil or bot["strategy"] == nil or bot["role"] == nil) then 
@@ -1161,19 +1214,40 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self, event, ...)
                 end
             end
             ResizeBotPanel(SelectedBotPanel, width * 25 + 20, height * 25 + 25)
-            
-            if (string.find(message, "Following") == 1 or string.find(message, "Staying") == 1 or string.find(message, "Fleeing") == 1) then
-                wait(0.1, function() SendChatMessage("nc ?", "WHISPER", nil, sender) end)
-            end
-            if (string.find(message, "Formation set to") == 1) then
-                wait(0.1, function() SendChatMessage("formation ?", "WHISPER", nil, sender) end)
-            end
-            if (string.find(message, "RTI set to") == 1) then
-                wait(0.1, function() SendChatMessage("rti ?", "WHISPER", nil, sender) end)
-            end
-        end        
+        end
     end
 end)
+
+function UpdateGroupToolBar()
+    for toolbarName,toolbar in pairs(GroupToolBars) do
+        for buttonName,button in pairs(toolbar) do
+            local toggle = false
+            for key,bot in pairs(botTable) do
+                if (button["strategy"] ~= nil) then
+                    for key,strategy in pairs(bot["strategy"]["nc"]) do
+                        if (strategy == button["strategy"]) then
+                            toggle = true
+                            break
+                        end
+                    end
+                    for key,strategy in pairs(bot["strategy"]["co"]) do
+                        if (strategy == button["strategy"]) then
+                            toggle = true
+                            break
+                        end
+                    end
+                end
+                if (button["formation"] ~= nil and bot["formation"] ~= nil and string.find(bot["formation"], button["formation"]) ~= nil) then
+                    toggle = true
+                end
+                if (button["rti"] ~= nil and bot["rti"] ~= nil and string.find(bot["rti"], button["rti"]) ~= nil) then
+                    toggle = true
+                end
+            end
+            ToggleButton(BotRoster, toolbarName, buttonName, toggle)
+        end
+    end
+end
 
 function trim2(s)
   return s:match "^%s*(.-)%s*$"
@@ -1241,6 +1315,7 @@ function SlashCmdList.MANGOSBOT(msg, editbox) -- 4.
             BotRoster:Hide() 
         else
             SendChatMessage(".bot list", "SAY")
+            SendChatMessage("formation ?", "PARTY")
         end
     end
 end
