@@ -711,47 +711,54 @@ function CreateSelectedBotPanel()
             tooltip = "Tank mode",
             index = 1
         },
+        ["heal"] = {
+            icon = "heal",
+            command = {[0] = "co +heal,?"},
+            strategy = "heal",
+            tooltip = "Healer mode",
+            index = 2
+        },
         ["bmana"] = {
             icon = "bmana",
             command = {[0] = "co ~bmana,?", [1] = "nc ~bmana,?"},
             strategy = "bmana",
             tooltip = "Buff mana regen",
-            index = 2
+            index = 3
         },
         ["bhealth"] = {
             icon = "bhealth",
             command = {[0] = "co ~bhealth,?"},
             strategy = "bhealth",
             tooltip = "Buff health regen",
-            index = 3
+            index = 4
         },
         ["bdps"] = {
             icon = "bdps",
             command = {[0] = "co ~bdps,?", [1] = "nc ~bdps,?"},
             strategy = "bdps",
             tooltip = "Buff DPS",
-            index = 4
+            index = 5
         },
         ["barmor"] = {
             icon = "barmor",
             command = {[0] = "co ~barmor,?", [1] = "nc ~barmor,?"},
             strategy = "barmor",
             tooltip = "Buff armor",
-            index = 5
+            index = 6
         },
         ["bspeed"] = {
             icon = "bspeed",
             command = {[0] = "co ~bspeed,?", [1] = "nc ~bspeed,?"},
             strategy = "bspeed",
             tooltip = "Buff movement speed",
-            index = 6
+            index = 7
         },
         ["bthreat"] = {
             icon = "bthreat",
             command = {[0] = "co ~bthreat,?", [1] = "nc ~bthreat,?"},
             strategy = "bthreat",
             tooltip = "Buff threat generation",
-            index = 7
+            index = 8
         }
     })
     CreateToolBar(frame, -y, "CLASS_PRIEST", {
