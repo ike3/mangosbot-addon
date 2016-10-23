@@ -533,47 +533,26 @@ function CreateSelectedBotPanel()
         
     y = y + 25
     CreateToolBar(frame, -y, "attack_type", {
-        ["attack_weak"] = {
-            icon = "attack_weak",
-            command = {[0] = "nc +attack weak,?", [1] = "co +attack weak,?"},
-            strategy = "attack weak",
-            tooltip = "Attack weak enemy first",
-            index = 0
-        },
         ["tank_aoe"] = {
-            icon = "tank_aoe",
+            icon = "tank_assist",
             command = {[0] = "nc +tank aoe,?",[1] = "co +tank aoe,?"},
             strategy = "tank aoe",
-            tooltip = "Generate maximum threat",
-            index = 1
-        },
-        ["tank_assist"] = {
-            icon = "tank_assist",
-            command = {[0] = "nc +tank assist,?",[1] = "co +tank assist,?"},
-            strategy = "tank assist",
-            tooltip = "Assist main tank",
-            index = 2
+            tooltip = "Grab all aggro",
+            index = 0
         },
         ["dps_assist"] = {
             icon = "dps_assist",
             command = {[0] = "nc +dps assist,?",[1] = "co +dps assist,?"},
             strategy = "dps assist",
-            tooltip = "Assist dps players",
-            index = 3
-        },
-        ["attack_rti"] = {
-            icon = "attack_rti",
-            command = {[0] = "nc +attack rti,?",[1] = "co +attack rti,?"},
-            strategy = "attack rti",
-            tooltip = "Attack enemy with assigned mark",
-            index = 4
+            tooltip = "Assist others",
+            index = 1
         },
         ["threat"] = {
             icon = "threat",
             command = {[0] = "co ~threat,?"},
             strategy = "threat",
             tooltip = "Keep threat level low",
-            index = 5
+            index = 2
         }
     })
 
