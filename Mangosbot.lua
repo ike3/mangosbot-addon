@@ -938,7 +938,7 @@ local function fmod(a,b)
 end
 
 Mangosbot_EventFrame:SetScript("OnEvent", function(self)
-    print(event)
+    --print(event)
     if (event == "PLAYER_TARGET_CHANGED") then
         local name = GetUnitName("target")
         local self = GetUnitName("player")
