@@ -1,4 +1,4 @@
-## Interface: 30300
+## Interface: 11000
 ## Title: MangosBot
 ## Author: ike3
 ## Notes: MangosBot UI

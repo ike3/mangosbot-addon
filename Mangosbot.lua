@@ -41,23 +41,26 @@ function CreateToolBar(frame, y, name, buttons, x, spacing, register)
         })
         btn:SetBackdropBorderColor(0, 0, 0, 1.0)
         btn:EnableMouse(true)
-        btn:RegisterForClicks("AnyDown")
+        btn:RegisterForClicks("LeftButtonDown")
+        btn["tooltip"] = button["tooltip"]
         btn:SetScript("OnEnter", function(self)
           GameTooltip:SetOwner(frame, "ANCHOR_TOPLEFT", 0, -frame:GetHeight() - 40)
-          GameTooltip:SetText(button["tooltip"])
+          GameTooltip:SetText(btn["tooltip"])
           GameTooltip:Show()
         end)
         btn:SetScript("OnLeave", function(self)
           GameTooltip:Hide()
         end)
+        btn["command"] = button["command"]
+        btn["group"] = button["group"]
         btn:SetScript("OnClick", function()
             btn:SetBackdropBorderColor(0.8, 0.2, 0.2, 1.0)
-            if (button["group"]) then
-                for key, command in pairs(button["command"]) do
+            if (btn["group"]) then
+                for key, command in pairs(btn["command"]) do
                     SendChatMessage(command, "PARTY")
                 end
             else
-                for key, command in pairs(button["command"]) do
+                for key, command in pairs(btn["command"]) do
                     SendChatMessage(command, "WHISPER", nil, GetUnitName("target"))
                 end
             end
@@ -93,8 +96,10 @@ function ToggleButton(frame, toolbar, button, toggle)
 end
 
 function EnablePositionSaving(frame, frameName)
-    frame:SetScript("OnMouseDown", frame.StartMoving)
-	frame:SetScript("OnMouseUp", function(self, button)
+    frame:SetScript("OnMouseDown", function() this:StartMoving() end)
+	frame:SetScript("OnMouseUp", function()
+            local button = arg1
+            local self = frame
             self:StopMovingOrSizing()
 
             if (frameopts == nil) then
@@ -128,7 +133,8 @@ function EnablePositionSaving(frame, frameName)
 		-------------------------------------------------------------------------------
 		-- Restore the panel's position on the screen.
 		-------------------------------------------------------------------------------
-		local function Reset_Position(self)
+		local function Reset_Position()
+            local self = frame
             if (frameopts == nil) then
                 frameopts = {}
             end
@@ -923,17 +929,20 @@ function SetFrameColor(frame, class)
     frame.header:SetBackdropBorderColor(color.r, color.g, color.b, 1.0)
 end
 
-local botTable = {}
+botTable = {}
 SelectedBotPanel = CreateSelectedBotPanel();
 BotRoster = CreateBotRoster();
 
-Mangosbot_EventFrame:SetScript("OnEvent", function(self, event, ...)
-    local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 = ...
-    -- print(event)
+local function fmod(a,b)
+    return a - math.floor(a/b)*b
+end
+
+Mangosbot_EventFrame:SetScript("OnEvent", function(self)
+    print(event)
     if (event == "PLAYER_TARGET_CHANGED") then
         local name = GetUnitName("target")
         local self = GetUnitName("player")
-        if (name == nil or not UnitIsPlayer("target") or name == self or UnitIsEnemy(self, name)) then
+        if (name == nil or not UnitIsPlayer("target") or name == self) then
             SelectedBotPanel:Hide()
         else 
             wait(0.1, function() SendChatMessage("nc ?", "WHISPER", nil, name) end)
@@ -970,10 +979,10 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self, event, ...)
                 
                 item.text:SetText(key)
                 
-                local filename = "Interface\\Addons\\Mangosbot\\Images\\cls_" .. bot["class"]:lower() ..".tga"
+                local filename = "Interface\\Addons\\Mangosbot\\Images\\cls_" .. string.lower(bot["class"]) ..".tga"
                 item.cls.texture:SetTexture(filename)
                 
-                local color = RAID_CLASS_COLORS[bot["class"]:upper()]
+                local color = RAID_CLASS_COLORS[string.upper(bot["class"])]
                 item.text:SetTextColor(color.r, color.g, color.b, 1.0)
                 
                 item:SetPoint("TOPLEFT", BotRoster, "TOPLEFT", x, -y)
@@ -1009,23 +1018,28 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self, event, ...)
                     inviteBtn:Hide()
                     allBotsLoggedIn = false
                 end
+                loginBtn["key"] = key
                 loginBtn:SetScript("OnClick", function()
-                    SendChatMessage(".bot add " .. key, "SAY")
+                    SendChatMessage(".bot add " .. loginBtn["key"], "SAY")
                 end)
+                logoutBtn["key"] = key
                 logoutBtn:SetScript("OnClick", function()
-                    SendChatMessage(".bot rm " .. key, "SAY")
+                    SendChatMessage(".bot rm " .. logoutBtn["key"], "SAY")
                 end)
+                inviteBtn["key"] = key
                 inviteBtn:SetScript("OnClick", function()
-                    InviteUnit(key)
+                    InviteByName(inviteBtn["key"])
                 end)
+                leaveBtn["key"] = key
                 leaveBtn:SetScript("OnClick", function()
-                    SendChatMessage("leave", "WHISPER", nil, key)
+                    SendChatMessage("leave", "WHISPER", nil, leaveBtn["key"])
                 end)
+                whisperBtn["key"] = key
                 whisperBtn:SetScript("OnClick", function()
-                    local editBox = _G["ChatFrame1EditBox"]
+                    local editBox = getglobal("ChatFrameEditBox")
                     editBox:Show()
                     editBox:SetFocus()
-                    editBox:SetText("/w " .. key .. " ")
+                    editBox:SetText("/w " .. whisperBtn["key"] .. " ")
                 end)
                 
                 
@@ -1035,12 +1049,12 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self, event, ...)
                 x = x + (5 + item:GetWidth())
                 height = item:GetHeight()
                 if (width < x) then width = x end
-                if ((index - 1) % colCount == 0) then 
+                if (fmod((index - 1), colCount) == 0) then 
                     y = y + (5 + height)
                     x = 5
                 end
             end
-            if ((index - 1) % colCount ~= 0) then 
+            if (fmod((index - 1), colCount) ~= 0) then 
                 y = y + (5 + height)
             end
             
@@ -1055,8 +1069,9 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self, event, ...)
             else 
                 loginAllBtn:Hide() 
             end
+            loginAllBtn["allBots"] = allBots
             loginAllBtn:SetScript("OnClick", function()
-                SendChatMessage(".bot add " .. allBots, "SAY")
+                SendChatMessage(".bot add " .. loginAllBtn["allBots"], "SAY")
             end)
             
             local logoutAllBtn = tb.buttons["logout_all"]
@@ -1067,8 +1082,9 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self, event, ...)
             else 
                 logoutAllBtn:Hide() 
             end
+            logoutAllBtn["allBots"] = allBots
             logoutAllBtn:SetScript("OnClick", function()
-                SendChatMessage(".bot rm " .. allBots, "SAY")
+                SendChatMessage(".bot rm " .. logoutAllBtn["allBots"], "SAY")
             end)
             
             local inviteAllBtn = tb.buttons["invite_all"]
@@ -1079,10 +1095,13 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self, event, ...)
             else 
                 inviteAllBtn:Hide() 
             end
+            inviteAllBtn["key"] = key
             inviteAllBtn:SetScript("OnClick", function()
                 local timeout = 0.1
                 for key,bot in pairs(botTable) do
-                    wait(timeout, function() InviteUnit(key) end)
+                    wait(timeout, function(key) 
+                        InviteByName(key) 
+                    end, key)
                     timeout = timeout + 0.1
                 end
                 wait(1, function() SendChatMessage(".bot list", "SAY") end)
@@ -1096,10 +1115,11 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self, event, ...)
             else 
                 leaveAllBtn:Hide() 
             end
+            leaveAllBtn["key"] = key
             leaveAllBtn:SetScript("OnClick", function()
                 local timeout = 0.1
                 for key,bot in pairs(botTable) do
-                    wait(timeout, function() SendChatMessage("leave", "WHISPER", nil, key) end)
+                    wait(timeout, function(key) SendChatMessage("leave", "WHISPER", nil, key) end, key)
                     timeout = timeout + 0.1
                 end
             end)
@@ -1236,7 +1256,32 @@ function UpdateGroupToolBar()
 end
 
 function trim2(s)
-  return s:match "^%s*(.-)%s*$"
+
+    local find = string.find
+    local sub = string.sub
+    function trim8(s)
+      local i1,i2 = find(s,'^%s*')
+      if i2 >= i1 then s = sub(s,i2+1) end
+      local i1,i2 = find(s,'%s*$')
+      if i2 >= i1 then s = sub(s,1,i1-1) end
+      return s
+    end
+    return trim8(s)
+end
+
+function string:split( self, inSplitPattern, outResults )
+  if not outResults then
+    outResults = { }
+  end
+  local theStart = 1
+  local theSplitStart, theSplitEnd = string.find( self, inSplitPattern, theStart )
+  while theSplitStart do
+    table.insert( outResults, string.sub( self, theStart, theSplitStart-1 ) )
+    theStart = theSplitEnd + 1
+    theSplitStart, theSplitEnd = string.find( self, inSplitPattern, theStart )
+  end
+  table.insert( outResults, string.sub( self, theStart ) )
+  return outResults
 end
 
 function OnWhisper(message, sender)
@@ -1249,8 +1294,10 @@ function OnWhisper(message, sender)
         local list = {}
         local type = "co"
         local role = "dps"
-        for i in string.gmatch(string.sub(message, 13), "([^,]+)") do
-            local name = trim2(i)
+        local text = string.sub(message, 13)
+        local splitted = string:split(text, ", ")
+        for i = 1, tablelength(splitted) do
+            local name = trim2(splitted[i])
             table.insert(list, name)
             if (name == "nc") then type = 'nc' end
             if (name == "heal") then role = "heal" end
@@ -1275,8 +1322,10 @@ end
 function OnSystemMessage(message)
     if (string.find(message, 'Bot roster: ') == 1) then
         botTable = {}
-        for i in string.gmatch(string.sub(message, 13), "([^,]+)") do
-            local line = trim2(i)
+        local text = string.sub(message, 13)
+        local splitted = string:split(text, ", ")
+        for i = 1, tablelength(splitted) do
+            local line = trim2(splitted[i])
             local on = string.sub(line, 1, 1)
             local pos = string.find(line, " ")
             local name = string.sub(line, 2, pos - 1)
@@ -1285,9 +1334,8 @@ function OnSystemMessage(message)
             if (botTable[name] == nil) then
                 botTable[name] = {}
             end
-            local bot = botTable[name]
-            bot["class"] = cls
-            bot["online"] = (on == "+")
+            botTable[name]["class"] = cls
+            botTable[name]["online"] = (on == "+")
         end
         return true
     end
@@ -1309,14 +1357,21 @@ end
 local waitTable = {};
 local waitFrame = nil;
 
-function wait(delay, func, ...)
+function tablelength(T)
+  local count = 0
+  for _ in pairs(T) do count = count + 1 end
+  return count
+end
+
+function wait(delay, func, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)
   if(type(delay)~="number" or type(func)~="function") then
     return false;
   end
   if(waitFrame == nil) then
     waitFrame = CreateFrame("Frame","WaitFrame", UIParent);
-    waitFrame:SetScript("onUpdate",function (self,elapse)
-      local count = #waitTable;
+    waitFrame:SetScript("OnUpdate",function ()
+      local elapse = 0.1
+      local count = tablelength(waitTable);
       local i = 1;
       while(i<=count) do
         local waitRecord = tremove(waitTable,i);
@@ -1333,8 +1388,12 @@ function wait(delay, func, ...)
       end
     end);
   end
-  tinsert(waitTable,{delay,func,{...}});
+  tinsert(waitTable,{delay,func,{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9}});
   return true;
+end
+
+function print(s)
+    if (s ~= nil) then DEFAULT_CHAT_FRAME:AddMessage(s); else DEFAULT_CHAT_FRAME:AddMessage("nil"); end
 end
 
 print("MangosBOT Addon is loaded"); 
