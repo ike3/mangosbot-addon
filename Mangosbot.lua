@@ -1013,7 +1013,7 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
                     if (not inParty) then allBotsInParty = false end
                     allBotsLoggedOut = false
                 else
-                    item:SetBackdropBorderColor(0.4,0.4,0.4,1)
+                    item:SetBackdropBorderColor(0.2,0.2,0.2,1)
                     loginBtn:Show()
                     inviteBtn:Hide()
                     allBotsLoggedIn = false
