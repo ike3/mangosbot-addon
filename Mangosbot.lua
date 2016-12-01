@@ -619,6 +619,13 @@ function CreateSelectedBotPanel()
             strategy = "heal",
             tooltip = "Healer mode",
             index = 3
+        },
+        ["cure"] = {
+            icon = "cure",
+            command = {[0] = "co ~cure,?", [1] = "nc ~cure,?"},
+            strategy = "cure",
+            tooltip = "Cure (poison, disease, etc.)",
+            index = 4
         }
     })
     CreateToolBar(frame, -y, "CLASS_HUNTER", {
@@ -700,6 +707,13 @@ function CreateSelectedBotPanel()
             strategy = "bdps",
             tooltip = "Buff DPS",
             index = 6
+        },
+        ["cure"] = {
+            icon = "cure",
+            command = {[0] = "co ~cure,?", [1] = "nc ~cure,?"},
+            strategy = "cure",
+            tooltip = "Cure (poison, disease, etc.)",
+            index = 7
         }
     })
     CreateToolBar(frame, -y, "CLASS_PALADIN", {
@@ -765,6 +779,13 @@ function CreateSelectedBotPanel()
             strategy = "bthreat",
             tooltip = "Buff threat generation",
             index = 8
+        },
+        ["cure"] = {
+            icon = "cure",
+            command = {[0] = "co ~cure,?", [1] = "nc ~cure,?"},
+            strategy = "cure",
+            tooltip = "Cure (poison, disease, etc.)",
+            index = 9
         }
     })
     CreateToolBar(frame, -y, "CLASS_PRIEST", {
@@ -802,6 +823,13 @@ function CreateSelectedBotPanel()
             strategy = "shadow debuff",
             tooltip = "Use shadow debuffs",
             index = 4
+        },
+        ["cure"] = {
+            icon = "cure",
+            command = {[0] = "co ~cure,?", [1] = "nc ~cure,?"},
+            strategy = "cure",
+            tooltip = "Cure (poison, disease, etc.)",
+            index = 5
         }
     })
     CreateToolBar(frame, -y, "CLASS_ROGUE", {
@@ -862,6 +890,13 @@ function CreateSelectedBotPanel()
             strategy = "bdps",
             tooltip = "Buff DPS",
             index = 6
+        },
+        ["cure"] = {
+            icon = "cure",
+            command = {[0] = "co ~cure,?", [1] = "nc ~cure,?"},
+            strategy = "cure",
+            tooltip = "Cure (poison, disease, etc.)",
+            index = 7
         }
     })
     CreateToolBar(frame, -y, "CLASS_WARLOCK", {
