@@ -942,7 +942,7 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
     if (event == "PLAYER_TARGET_CHANGED") then
         local name = GetUnitName("target")
         local self = GetUnitName("player")
-        if (name == nil or not UnitExists("target") or UnitIsEnemy("target", "player") or not UnitIsPlayer("target")) then
+        if (name == nil or not UnitExists("target") or UnitIsEnemy("target", "player") or not UnitIsPlayer("target") or name == self) then
             SelectedBotPanel:Hide()
         else 
             wait(0.1, function() SendChatMessage("nc ?", "WHISPER", nil, name) end)
