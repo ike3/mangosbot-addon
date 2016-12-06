@@ -536,7 +536,39 @@ function CreateSelectedBotPanel()
     
     y = y + 25
     CreateFormationToolBar(frame, y, "formation", false, 5, 5, true)
-        
+
+    y = y + 25
+    CreateToolBar(frame, -y, "loot", {
+        ["ll_normal"] = {
+            icon = "ll_normal",
+            command = {[0] = "ll normal"},
+            loot = "normal",
+            tooltip = "Loot tradeskill items only",
+            index = 0
+        },
+        ["ll_gray"] = {
+            icon = "ll_gray",
+            command = {[0] = "ll gray"},
+            loot = "gray",
+            tooltip = "Loot gray items",
+            index = 1
+        },
+        ["ll_disenchant"] = {
+            icon = "ll_disenchant",
+            command = {[0] = "ll disenchant"},
+            loot = "disenchant",
+            tooltip = "Loot BoE items for disenchanting",
+            index = 2
+        },
+        ["ll_all"] = {
+            icon = "ll_all",
+            command = {[0] = "ll all"},
+            loot = "all",
+            tooltip = "Loot everything",
+            index = 3
+        }
+    })
+    
     y = y + 25
     CreateToolBar(frame, -y, "attack_type", {
         ["tank_aoe"] = {
@@ -984,6 +1016,7 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
             wait(0.2, function() SendChatMessage("co ?", "WHISPER", nil, name) end)
             wait(0.3, function() SendChatMessage("formation ?", "WHISPER", nil, name) end)
             wait(0.4, function() SendChatMessage("rti ?", "WHISPER", nil, name) end)
+            wait(0.5, function() SendChatMessage("ll ?", "WHISPER", nil, name) end)
         end
     end
         
@@ -1183,12 +1216,16 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
         if (string.find(message, "Hello") == 1 or string.find(message, "Goodbye") == 1) then
             SendChatMessage(".bot list", "SAY")
             SendChatMessage("formation ?", "PARTY")
+            SendChatMessage("ll ?", "PARTY")
         end
         if (string.find(message, "Following") == 1 or string.find(message, "Staying") == 1 or string.find(message, "Fleeing") == 1) then
             wait(0.1, function() SendChatMessage("nc ?", "WHISPER", nil, sender) end)
         end
         if (string.find(message, "Formation set to") == 1) then
             wait(0.1, function() SendChatMessage("formation ?", "WHISPER", nil, sender) end)
+        end
+        if (string.find(message, "Loot strategy set to ") == 1) then
+            wait(0.1, function() SendChatMessage("ll ?", "WHISPER", nil, sender) end)
         end
         if (string.find(message, "RTI set to") == 1) then
             wait(0.1, function() SendChatMessage("rti ?", "WHISPER", nil, sender) end)
@@ -1246,6 +1283,9 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
                     if (button["rti"] ~= nil and bot["rti"] ~= nil and string.find(bot["rti"], button["rti"]) ~= nil) then
                         toggle = true
                     end
+                    if (button["loot"] ~= nil and bot["loot"] ~= nil and string.find(bot["loot"], button["loot"]) ~= nil) then
+                        toggle = true
+                    end
                     ToggleButton(SelectedBotPanel, toolbarName, buttonName, toggle)
                     numButtons = numButtons + 1
                 end
@@ -1282,6 +1322,9 @@ function UpdateGroupToolBar()
                     toggle = true
                 end
                 if (button["rti"] ~= nil and bot["rti"] ~= nil and string.find(bot["rti"], button["rti"]) ~= nil) then
+                    toggle = true
+                end
+                if (button["loot"] ~= nil and bot["loot"] ~= nil and string.find(bot["loot"], button["loot"]) ~= nil) then
                     toggle = true
                 end
             end
@@ -1349,6 +1392,9 @@ function OnWhisper(message, sender)
     if (string.find(message, 'Formation: ') == 1) then
         bot['formation'] = string.sub(message, 11)
     end
+    if (string.find(message, 'Loot strategy: ') == 1) then
+        bot['loot'] = string.sub(message, 15)
+    end
     if (string.find(message, 'RTI: ') == 1) then
         bot['rti'] = string.sub(message, 5)
     end
@@ -1385,6 +1431,7 @@ function SlashCmdList.MANGOSBOT(msg, editbox) -- 4.
         else
             SendChatMessage(".bot list", "SAY")
             SendChatMessage("formation ?", "PARTY")
+            SendChatMessage("ll ?", "PARTY")
         end
     end
 end
