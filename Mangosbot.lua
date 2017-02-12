@@ -363,14 +363,6 @@ function CreateRtiToolBar(frame, y, name, group, x, spacing, register)
             tooltip = "Assign diamond mark",
             index = 6,
             group = group
-        },
-        ["rti_moon"] = {
-            icon = "rti_moon",
-            command = {[0] = "rti moon"},
-            rti = "moon",
-            tooltip = "Assign moon mark",
-            index = 7,
-            group = group
         }
     }, x, spacing, register)
 end
