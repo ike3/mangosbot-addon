@@ -39,7 +39,7 @@ function CreateToolBar(frame, y, name, buttons, x, spacing, register)
             tile = false, tileSize = 16, edgeSize = 2, 
             insets = { left = 0, right = 0, top = 0, bottom = 0 }
         })
-        btn:SetBackdropBorderColor(0, 0, 0, 1.0)
+        btn:SetBackdropBorderColor(0, 0, 0, 0.0)
         btn:EnableMouse(true)
         btn:RegisterForClicks("LeftButtonDown")
         btn["tooltip"] = button["tooltip"]
@@ -91,7 +91,7 @@ function ToggleButton(frame, toolbar, button, toggle)
     if (toggle) then
         btn:SetBackdropBorderColor(0.2, 1.0, 0.2, 1.0)
     else
-        btn:SetBackdropBorderColor(0, 0, 0, 1.0)
+        btn:SetBackdropBorderColor(0, 0, 0, 0.0)
     end
 end
 
