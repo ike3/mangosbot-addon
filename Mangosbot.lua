@@ -512,7 +512,7 @@ function CreateSelectedBotPanel()
         },
         ["loot"] = {
             icon = "loot",
-            command = {[0] = "d add all loot"},
+            command = {[0] = "d add all loot", [1] = "d loot"},
             strategy = "",
             tooltip = "Loot everything",
             index = 1
