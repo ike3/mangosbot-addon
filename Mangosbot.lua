@@ -1058,7 +1058,7 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
                 local whisperBtn = item.toolbar["quickbar"..index].buttons["whisper"]
                 whisperBtn:Hide()
                 if (bot["online"]) then
-                    item:SetBackdropBorderColor(0.2, 1.0, 0.2, 1.0)
+                    item:SetBackdropBorderColor(0.6, 0.6, 0.2, 1.0)
                     logoutBtn:Show()
                     whisperBtn:Show()
                     local inParty = false
@@ -1068,6 +1068,7 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
                             leaveBtn:Show()
                             atLeastOneBotInParty = true
                             inParty = true
+                            item:SetBackdropBorderColor(0.2, 0.8, 0.8, 1.0)
                         end
                     end
                     if (not inParty) then allBotsInParty = false end
