@@ -498,6 +498,13 @@ function CreateSelectedBotPanel()
             strategy = "passive",
             tooltip = "Passive mode",
             index = 4
+        },
+        ["runaway"] = {
+            icon = "flee",
+            command = {[0] = "co ~runaway,?"},
+            strategy = "runaway",
+            tooltip = "Run away from mobs",
+            index = 5
         }
     })
 
