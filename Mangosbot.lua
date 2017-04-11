@@ -894,33 +894,40 @@ function CreateSelectedBotPanel()
             tooltip = "Melee mode",
             index = 3
         },
+        ["melee_aoe"] = {
+            icon = "aoe",
+            command = {[0] = "co ~melee aoe,?"},
+            strategy = "melee aoe",
+            tooltip = "Use melee AOE abilities",
+            index = 4
+        },
         ["totems"] = {
             icon = "totems",
             command = {[0] = "co ~totems,?"},
             strategy = "totems",
             tooltip = "Use totems",
-            index = 4
+            index = 5
         },
         ["bmana"] = {
             icon = "bmana",
             command = {[0] = "co ~bmana,?", [1] = "nc ~bmana,?"},
             strategy = "bmana",
             tooltip = "Buff mana regen",
-            index = 5
+            index = 6
         },
         ["bdps"] = {
             icon = "bdps",
             command = {[0] = "co ~bdps,?", [1] = "nc ~bdps,?"},
             strategy = "bdps",
             tooltip = "Buff DPS",
-            index = 6
+            index = 7
         },
         ["cure"] = {
             icon = "cure",
             command = {[0] = "co ~cure,?", [1] = "nc ~cure,?"},
             strategy = "cure",
             tooltip = "Cure (poison, disease, etc.)",
-            index = 7
+            index = 8
         }
     })
     CreateToolBar(frame, -y, "CLASS_WARLOCK", {
