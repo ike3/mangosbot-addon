@@ -530,6 +530,13 @@ function CreateSelectedBotPanel()
             strategy = "",
             tooltip = "Set guard position",
             index = 2
+        },
+        ["count"] = {
+            icon = "count",
+            command = {[0] = "c"},
+            strategy = "",
+            tooltip = "Show inventory",
+            index = 3
         }
     })
     
