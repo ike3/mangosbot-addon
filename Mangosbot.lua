@@ -537,6 +537,13 @@ function CreateSelectedBotPanel()
             strategy = "",
             tooltip = "Show inventory",
             index = 3
+        },
+        ["bank"] = {
+            icon = "bank",
+            command = {[0] = "bank"},
+            strategy = "",
+            tooltip = "Show bank",
+            index = 4
         }
     })
     
