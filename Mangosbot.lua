@@ -1269,6 +1269,7 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
             SendChatMessage(".bot list", "SAY")
             SendChatMessage("formation ?", "PARTY")
             SendChatMessage("ll ?", "PARTY")
+            SendChatMessage("save mana ?", "PARTY")
         end
         if (string.find(message, "Following") == 1 or string.find(message, "Staying") == 1 or string.find(message, "Fleeing") == 1) then
             wait(0.1, function() SendChatMessage("nc ?", "WHISPER", nil, sender) end)
