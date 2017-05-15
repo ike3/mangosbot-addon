@@ -303,6 +303,9 @@ function CreateBotRoster()
     GroupToolBars["group_formation"] = CreateFormationToolBar(frame, 0, "group_formation", true, 5, 0, false)
     frame.toolbar["group_formation"]:SetBackdropBorderColor(0,0,0,0.0)
     
+    GroupToolBars["group_savemana"] = CreateSaveManaToolBar(frame, 0, "group_savemana", true, 5, 0, false)
+    frame.toolbar["group_savemana"]:SetBackdropBorderColor(0,0,0,0.0)
+    
     return frame
 end
 
@@ -410,6 +413,21 @@ function CreateFormationToolBar(frame, y, name, group, x, spacing, register)
             group = group
         }
     }, x, spacing, register)
+end
+
+function CreateSaveManaToolBar(frame, y, name, group, x, spacing, register)
+    local buttons = {};
+    for i = 1, 5 do
+        buttons["savemana"..i] = {
+            icon = "savemana"..i,
+            command = {[0] = "save mana "..i},
+            tooltip = "Save mana level: "..(i>1 and "#"..i or "disabled"),
+            index = i - 1,
+            group = group,
+            savemana = i
+        }
+    end
+    return CreateToolBar(frame, -y, name, buttons, x, spacing, register)
 end
 
 function CreateSelectedBotPanel()
@@ -549,6 +567,9 @@ function CreateSelectedBotPanel()
     
     y = y + 25
     CreateFormationToolBar(frame, y, "formation", false, 5, 5, true)
+
+    y = y + 25
+    CreateSaveManaToolBar(frame, y, "savemana", false, 5, 5, true)
 
     y = y + 25
     CreateToolBar(frame, -y, "loot", {
@@ -1037,6 +1058,7 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
             wait(0.3, function() SendChatMessage("formation ?", "WHISPER", nil, name) end)
             wait(0.4, function() SendChatMessage("rti ?", "WHISPER", nil, name) end)
             wait(0.5, function() SendChatMessage("ll ?", "WHISPER", nil, name) end)
+            wait(0.6, function() SendChatMessage("save mana ?", "WHISPER", nil, name) end)
         end
     end
         
@@ -1221,7 +1243,16 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
             else
                 formationToolBar:Hide()
             end
-            
+
+            local savemanaToolBar = BotRoster.toolbar["group_savemana"]
+            if (atLeastOneBotInParty) then 
+                savemanaToolBar:Show()
+                y = y + 22
+                savemanaToolBar:SetPoint("TOPLEFT", BotRoster, "TOPLEFT", 5, -y)
+            else
+                savemanaToolBar:Hide()
+            end
+
             UpdateGroupToolBar()
             BotRoster:SetWidth(width)
             BotRoster:SetHeight(y + 22)
@@ -1250,6 +1281,9 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
         end
         if (string.find(message, "RTI set to") == 1) then
             wait(0.1, function() SendChatMessage("rti ?", "WHISPER", nil, sender) end)
+        end
+        if (string.find(message, "save mana") == 1) then
+            wait(0.1, function() SendChatMessage("save mana ?", "WHISPER", nil, sender) end)
         end
         UpdateGroupToolBar()
         
@@ -1307,6 +1341,9 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
                     if (button["loot"] ~= nil and bot["loot"] ~= nil and string.find(bot["loot"], button["loot"]) ~= nil) then
                         toggle = true
                     end
+                    if (button["savemana"] ~= nil and bot["savemana"] ~= nil and string.find(bot["savemana"], button["savemana"]) ~= nil) then
+                        toggle = true
+                    end
                     ToggleButton(SelectedBotPanel, toolbarName, buttonName, toggle)
                     numButtons = numButtons + 1
                 end
@@ -1346,6 +1383,9 @@ function UpdateGroupToolBar()
                     toggle = true
                 end
                 if (button["loot"] ~= nil and bot["loot"] ~= nil and string.find(bot["loot"], button["loot"]) ~= nil) then
+                    toggle = true
+                end
+                if (button["savemana"] ~= nil and bot["savemana"] ~= nil and string.find(bot["savemana"], button["savemana"]) ~= nil) then
                     toggle = true
                 end
             end
@@ -1413,6 +1453,12 @@ function OnWhisper(message, sender)
     if (string.find(message, 'Formation: ') == 1) then
         bot['formation'] = string.sub(message, 11)
     end
+    if (string.find(message, 'Mana save level set: ') == 1) then
+        bot['savemana'] = string.sub(message, 21)
+    end
+    if (string.find(message, 'Mana save level: ') == 1) then
+        bot['savemana'] = string.sub(message, 17)
+    end
     if (string.find(message, 'Loot strategy: ') == 1) then
         bot['loot'] = string.sub(message, 15)
     end
@@ -1453,6 +1499,7 @@ function SlashCmdList.MANGOSBOT(msg, editbox) -- 4.
             SendChatMessage(".bot list", "SAY")
             SendChatMessage("formation ?", "PARTY")
             SendChatMessage("ll ?", "PARTY")
+            SendChatMessage("save mana ?", "PARTY")
         end
     end
 end
