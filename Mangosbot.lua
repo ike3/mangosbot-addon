@@ -53,7 +53,13 @@ function CreateToolBar(frame, y, name, buttons, x, spacing, register)
         end)
         btn["command"] = button["command"]
         btn["group"] = button["group"]
+        btn["handler"] = button["handler"]
         btn:SetScript("OnClick", function()
+            if (btn["handler"] ~= nil) then
+                btn["handler"]()
+                return
+            end
+            
             btn:SetBackdropBorderColor(0.8, 0.2, 0.2, 1.0)
             if (btn["group"]) then
                 for key, command in pairs(btn["command"]) do
@@ -430,6 +436,14 @@ function CreateSaveManaToolBar(frame, y, name, group, x, spacing, register)
     return CreateToolBar(frame, -y, name, buttons, x, spacing, register)
 end
 
+function StartChat()
+    local editBox = getglobal("ChatFrameEditBox")
+    editBox:Show()
+    editBox:SetFocus()
+    local name = GetUnitName("target")
+    editBox:SetText("/w " .. name .. " ")
+end
+
 function CreateSelectedBotPanel()
     local frame = CreateFrame("Frame", "SelectedBotPanel", UIParent)
     frame:Hide()
@@ -496,32 +510,32 @@ function CreateSelectedBotPanel()
             tooltip = "Stay in place",
             index = 1
         },
+        ["runaway"] = {
+            icon = "flee",
+            command = {[0] = "co ~runaway,?"},
+            strategy = "runaway",
+            tooltip = "Run away from mobs",
+            index = 2
+        },
         ["guard"] = {
             icon = "guard",
             command = {[0] = "nc +guard,?"},
             strategy = "guard",
             tooltip = "Guard pre-set place",
-            index = 2
+            index = 3
         },
         ["grind"] = {
             icon = "grind",
             command = {[0] = "nc ~grind,?"},
             strategy = "grind",
             tooltip = "Aggresive mode (grinding)",
-            index = 3
+            index = 4
         },
         ["passive"] = {
             icon = "passive",
             command = {[0] = "nc ~passive,?", [1] = "co ~passive,?"},
             strategy = "passive",
             tooltip = "Passive mode",
-            index = 4
-        },
-        ["runaway"] = {
-            icon = "flee",
-            command = {[0] = "co ~runaway,?"},
-            strategy = "runaway",
-            tooltip = "Run away from mobs",
             index = 5
         }
     })
@@ -535,33 +549,41 @@ function CreateSelectedBotPanel()
             tooltip = "Tell stats (XP, money, etc.)",
             index = 0
         },
+        ["whisper"] = {
+            icon = "whisper",
+            command = {[0] = ""},
+            tooltip = "Start whisper chat",
+            strategy = "",
+            handler = StartChat,
+            index = 1
+        },
         ["loot"] = {
             icon = "loot",
             command = {[0] = "d add all loot", [1] = "d loot"},
             strategy = "",
             tooltip = "Loot everything",
-            index = 1
+            index = 2
         },
         ["set_guard"] = {
             icon = "set_guard",
             command = {[0] = "position guard"},
             strategy = "",
             tooltip = "Set guard position",
-            index = 2
+            index = 3
         },
         ["count"] = {
             icon = "count",
             command = {[0] = "c"},
             strategy = "",
             tooltip = "Show inventory",
-            index = 3
+            index = 4
         },
         ["bank"] = {
             icon = "bank",
             command = {[0] = "bank"},
             strategy = "",
             tooltip = "Show bank",
-            index = 4
+            index = 5
         }
     })
     
