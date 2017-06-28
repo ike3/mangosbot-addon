@@ -197,7 +197,7 @@ function CreateBotRoster()
     for i = 1,10 do
         local item = CreateFrame("Frame", "BotRoster_Item" .. i, frame)
         item:SetPoint("TOPLEFT", frame, "TOPLEFT", i * 100, 0)
-        item:SetWidth(80)
+        item:SetWidth(96)
         item:SetHeight(40)
         item:SetBackdropColor(0,0,0,1)
         item:SetBackdrop({
@@ -260,6 +260,13 @@ function CreateBotRoster()
                 tooltip = "Start whisper chat",
                 strategy = "",
                 index = 2
+            },
+            ["summon"] = {
+                icon = "summon",
+                command = {[0] = ""},
+                tooltip = "Summon at meeting stone",
+                strategy = "",
+                index = 3
             }
         }, 20, 0, false)
         local tb = item.toolbar["quickbar"..i]
@@ -268,7 +275,8 @@ function CreateBotRoster()
         tb.buttons["logout"]:SetPoint("TOPLEFT", tb, "TOPLEFT", 0, 0)
         tb.buttons["invite"]:SetPoint("TOPLEFT", tb, "TOPLEFT", 16, 0)
         tb.buttons["leave"]:SetPoint("TOPLEFT", tb, "TOPLEFT", 16, 0)
-        tb.buttons["whisper"]:SetPoint("TOPLEFT", tb, "TOPLEFT", 32, 0)
+        tb.buttons["whisper"]:SetPoint("TOPLEFT", tb, "TOPLEFT", 48, 0)
+        tb.buttons["summon"]:SetPoint("TOPLEFT", tb, "TOPLEFT", 32, 0)
         
         item:Hide()
         frame.items[i] = item
@@ -584,6 +592,13 @@ function CreateSelectedBotPanel()
             strategy = "",
             tooltip = "Show bank",
             index = 5
+        },
+        ["summon"] = {
+            icon = "summon",
+            command = {[0] = "summon"},
+            strategy = "",
+            tooltip = "Summon at meeting stone",
+            index = 6
         }
     })
     
@@ -1129,10 +1144,13 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
                 leaveBtn:Hide()
                 local whisperBtn = item.toolbar["quickbar"..index].buttons["whisper"]
                 whisperBtn:Hide()
+                local summonBtn = item.toolbar["quickbar"..index].buttons["summon"]
+                summonBtn:Hide()
                 if (bot["online"]) then
                     item:SetBackdropBorderColor(0.6, 0.6, 0.2, 1.0)
                     logoutBtn:Show()
                     whisperBtn:Show()
+                    summonBtn:Show()
                     local inParty = false
                     for i = 1,5 do
                         if (UnitName("party"..i) == key) then
@@ -1173,6 +1191,10 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
                     editBox:Show()
                     editBox:SetFocus()
                     editBox:SetText("/w " .. whisperBtn["key"] .. " ")
+                end)
+                summonBtn["key"] = key
+                summonBtn:SetScript("OnClick", function()
+                    SendChatMessage("summon", "WHISPER", nil, summonBtn["key"])
                 end)
                 
                 
