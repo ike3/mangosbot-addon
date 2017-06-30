@@ -20,4 +20,7 @@
   <Binding runOnUp="false" name="ATTACK" default="SHIFT+A">
     ClickGroupToolBarButton("group_movement", "attack")
   </Binding>
+  <Binding runOnUp="false" name="PULL" default="SHIFT+T">
+    ClickGroupToolBarButton("group_movement", "pull")
+  </Binding>
 </Bindings>

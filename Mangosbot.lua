@@ -507,6 +507,15 @@ function CreateMovementToolBar(frame, y, name, group, x, spacing, register)
             group = group
         }
         index = index + 1
+        tb["pull"] = {
+            icon = "tank_assist",
+            command = {[0] = "@dps flee", [1] = "@heal flee", [2] = "@tank d attack my target"},
+            strategy = "",
+            tooltip = "Pull",
+            index = index,
+            group = group
+        }
+        index = index + 1
     end
 
     return CreateToolBar(frame, -y, name, tb, x, spacing, register)
