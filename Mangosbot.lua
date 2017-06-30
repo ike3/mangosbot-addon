@@ -498,6 +498,15 @@ function CreateMovementToolBar(frame, y, name, group, x, spacing, register)
             group = group
         }
         index = index + 1
+        tb["attack"] = {
+            icon = "dps",
+            command = {[0] = "d attack my target"},
+            strategy = "",
+            tooltip = "Attack my target",
+            index = index,
+            group = group
+        }
+        index = index + 1
     end
 
     return CreateToolBar(frame, -y, name, tb, x, spacing, register)

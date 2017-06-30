@@ -17,4 +17,7 @@
   <Binding runOnUp="false" name="LOOT" default="SHIFT+J">
     ClickGroupToolBarButton("group_movement", "loot")
   </Binding>
+  <Binding runOnUp="false" name="ATTACK" default="SHIFT+A">
+    ClickGroupToolBarButton("group_movement", "attack")
+  </Binding>
 </Bindings>
