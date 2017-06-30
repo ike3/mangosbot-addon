@@ -105,8 +105,13 @@ function ToolBarButtonOnClick(btn, visual)
     end
 
     if (btn["group"]) then
+        local delay = 0
         for key, command in pairs(btn["command"]) do
             wait(key, function(command) SendChatMessage(command, "PARTY") end, command)
+            if (delay < key) then delay = key end
+        end
+        if (btn["tooltip"] ~= nil) then
+            wait(delay + 1, function(command) SendChatMessage(command, "PARTY") end, btn["tooltip"])
         end
     else
         for key, command in pairs(btn["command"]) do
@@ -414,7 +419,7 @@ function CreateMovementToolBar(frame, y, name, group, x, spacing, register)
     local tb = {
         ["follow_master"] = {
             icon = "follow_master",
-            command = {[0] = "follow", [1] = "nc ?", [2] = "co ?", [3] = "Follow me"},
+            command = {[0] = "follow", [1] = "nc ?", [2] = "co ?"},
             strategy = "follow",
             tooltip = "Follow main character",
             index = 0,
@@ -423,7 +428,7 @@ function CreateMovementToolBar(frame, y, name, group, x, spacing, register)
         },
         ["stay"] = {
             icon = "stay",
-            command = {[0] = "stay", [1] = "nc ?", [2] = "co ?", [3] = "Wait here"},
+            command = {[0] = "stay", [1] = "nc ?", [2] = "co ?"},
             strategy = "stay",
             tooltip = "Stay in place",
             index = 1,
@@ -464,7 +469,7 @@ function CreateMovementToolBar(frame, y, name, group, x, spacing, register)
 
     tb["passive"] = {
         icon = "passive",
-        command = {[0] = "nc +passive,?", [1] = "co +passive,?", [2] = "Hold fire"},
+        command = {[0] = "nc +passive,?", [1] = "co +passive,?"},
         strategy = "passive",
         tooltip = "Passive mode",
         index = index,
@@ -474,7 +479,7 @@ function CreateMovementToolBar(frame, y, name, group, x, spacing, register)
 
     tb["flee_passive"] = {
         icon = "flee_passive",
-        command = {[0] = "flee", [1] = "nc ?", [2] = "co ?", [3] = "Flee"},
+        command = {[0] = "flee", [1] = "nc ?", [2] = "co ?"},
         strategy = "",
         tooltip = "Flee",
         index = index,
@@ -486,7 +491,7 @@ function CreateMovementToolBar(frame, y, name, group, x, spacing, register)
     if (group) then
         tb["loot"] = {
             icon = "loot",
-            command = {[0] = "d add all loot", [1] = "d loot", [2] = "Loot everything"},
+            command = {[0] = "d add all loot", [1] = "d loot"},
             strategy = "",
             tooltip = "Loot everything",
             index = index,
