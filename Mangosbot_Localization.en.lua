@@ -5,3 +5,4 @@ BINDING_NAME_FOLLOW = "Bot Movement: Follow Master";
 BINDING_NAME_STAY = "Bot Movement: Stay";
 BINDING_NAME_PASSIVE = "Bot Movement: Passive";
 BINDING_NAME_FLEE = "Bot Movement: Flee";
+BINDING_NAME_LOOT = "Bot Actions: Loot";

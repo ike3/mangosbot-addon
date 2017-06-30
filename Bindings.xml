@@ -14,4 +14,7 @@
   <Binding runOnUp="false" name="FLEE" default="SHIFT+H">
     ClickGroupToolBarButton("group_movement", "flee_passive")
   </Binding>
+  <Binding runOnUp="false" name="LOOT" default="SHIFT+J">
+    ClickGroupToolBarButton("group_movement", "loot")
+  </Binding>
 </Bindings>

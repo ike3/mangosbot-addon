@@ -482,6 +482,19 @@ function CreateMovementToolBar(frame, y, name, group, x, spacing, register)
         emote = "flee"
     }
     index = index + 1
+
+    if (group) then
+        tb["loot"] = {
+            icon = "loot",
+            command = {[0] = "d add all loot", [1] = "d loot", [2] = "Loot everything"},
+            strategy = "",
+            tooltip = "Loot everything",
+            index = index,
+            group = group
+        }
+        index = index + 1
+    end
+
     return CreateToolBar(frame, -y, name, tb, x, spacing, register)
 end
 
