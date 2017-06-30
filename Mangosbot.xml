@@ -3,6 +3,7 @@
                    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ 
                    ..\..\FrameXML\UI.xsd">
   <Script File="Mangosbot.lua"/>
+  <Script file="Mangosbot_Localization.en.lua" />
   
 
 </Ui>

@@ -11,11 +11,11 @@ function CreateToolBar(frame, y, name, buttons, x, spacing, register)
     if (x == nil) then x = 5 end
     if (spacing == nil) then spacing = 5 end
     if (register == nil) then register = true end
-    
+
     if (frame.toolbar == nil) then
         frame.toolbar = {}
     end
-    
+
     local tb = CreateFrame("Frame", "Toolbar" .. name, frame)
     tb:SetPoint("TOPLEFT", frame, "TOPLEFT", x, y)
     tb:SetWidth(frame:GetWidth() - x - 5)
@@ -23,7 +23,7 @@ function CreateToolBar(frame, y, name, buttons, x, spacing, register)
     tb:SetBackdropColor(0,0,0,1.0)
     tb:SetBackdrop({
         edgeFile="Interface/ChatFrame/ChatFrameBackground",
-        tile = false, tileSize = 16, edgeSize = 0, 
+        tile = false, tileSize = 16, edgeSize = 0,
         insets = { left = 0, right = 0, top = 0, bottom = 0 }
     })
     tb:SetBackdropBorderColor(0,0,0,1.0)
@@ -36,7 +36,7 @@ function CreateToolBar(frame, y, name, buttons, x, spacing, register)
         btn:SetHeight(20)
         btn:SetBackdrop({
             edgeFile="Interface/ChatFrame/ChatFrameBackground",
-            tile = false, tileSize = 16, edgeSize = 2, 
+            tile = false, tileSize = 16, edgeSize = 2,
             insets = { left = 0, right = 0, top = 0, bottom = 0 }
         })
         btn:SetBackdropBorderColor(0, 0, 0, 0.0)
@@ -52,26 +52,14 @@ function CreateToolBar(frame, y, name, buttons, x, spacing, register)
           GameTooltip:Hide()
         end)
         btn["command"] = button["command"]
+        btn["emote"] = button["emote"]
         btn["group"] = button["group"]
         btn["handler"] = button["handler"]
+        btn["ToolBarButtonOnClick"] = ToolBarButtonOnClick;
         btn:SetScript("OnClick", function()
-            if (btn["handler"] ~= nil) then
-                btn["handler"]()
-                return
-            end
-            
-            btn:SetBackdropBorderColor(0.8, 0.2, 0.2, 1.0)
-            if (btn["group"]) then
-                for key, command in pairs(btn["command"]) do
-                    SendChatMessage(command, "PARTY")
-                end
-            else
-                for key, command in pairs(btn["command"]) do
-                    SendChatMessage(command, "WHISPER", nil, GetUnitName("target"))
-                end
-            end
+            btn["ToolBarButtonOnClick"](btn, true)
         end)
-        
+
         local image = CreateFrame("Frame", "Toolbar" .. name .. key .. "Image", btn)
         image:SetPoint("TOPLEFT", btn, "TOPLEFT", 2, -2)
         image:SetWidth(16)
@@ -81,15 +69,50 @@ function CreateToolBar(frame, y, name, buttons, x, spacing, register)
         image.texture:SetTexture(filename)
         image.texture:SetAllPoints()
         btn.image = image
-        
+
         tb.buttons[key] = btn
     end
-    
+
     frame.toolbar[name] = tb
     if (register) then
         ToolBars[name] = buttons
     end
     return buttons
+end
+
+function ClickToolBarButton(toolbar, button)
+    local btn = ToolBars[toolbar][button];
+    ToolBarButtonOnClick(btn, false)
+end
+
+function ClickGroupToolBarButton(toolbar, button)
+    local btn = GroupToolBars[toolbar][button];
+    ToolBarButtonOnClick(btn, false)
+end
+
+function ToolBarButtonOnClick(btn, visual)
+    if (btn["handler"] ~= nil) then
+        btn["handler"]()
+        return
+    end
+
+    if (visual) then
+      btn:SetBackdropBorderColor(0.8, 0.2, 0.2, 1.0)
+    end
+
+    if (btn["emote"] ~= nil) then
+        DoEmote(btn["emote"])
+    end
+
+    if (btn["group"]) then
+        for key, command in pairs(btn["command"]) do
+            wait(key, function(command) SendChatMessage(command, "PARTY") end, command)
+        end
+    else
+        for key, command in pairs(btn["command"]) do
+            wait(key, function(command) SendChatMessage(command, "WHISPER", nil, GetUnitName("target")) end, command)
+        end
+    end
 end
 
 function ToggleButton(frame, toolbar, button, toggle)
@@ -114,7 +137,7 @@ function EnablePositionSaving(frame, frameName)
             if (frameopts[frameName] == nil) then
                 frameopts[frameName] = {}
             end
-            
+
             local opts = frameopts[frameName]
             local from, _, to, x, y = self:GetPoint()
 
@@ -185,14 +208,14 @@ function CreateBotRoster()
     frame:SetBackdropColor(0, 0, 0, 1.0)
     frame:SetBackdrop({
         bgFile = "Interface/DialogFrame/UI-DialogBox-Background",
-        tile = true, tileSize = 16, edgeSize = 0, 
+        tile = true, tileSize = 16, edgeSize = 0,
         insets = { left = 0, right = 0, top = 0, bottom = 0 }
     })
     frame:SetBackdropBorderColor(0, 0, 0, 1)
     frame:RegisterForDrag("LeftButton")
-    
+
     EnablePositionSaving(frame, "BotRoster")
-    
+
     frame.items = {}
     for i = 1,10 do
         local item = CreateFrame("Frame", "BotRoster_Item" .. i, frame)
@@ -203,11 +226,11 @@ function CreateBotRoster()
         item:SetBackdrop({
             bgFile = "Interface/DialogFrame/UI-DialogBox-Background",
             edgeFile="Interface/ChatFrame/ChatFrameBackground",
-            tile = true, tileSize = 16, edgeSize = 2, 
+            tile = true, tileSize = 16, edgeSize = 2,
             insets = { left = 2, right = 2, top = 2, bottom = 0 }
         })
         item:SetBackdropBorderColor(0.8,0.8,0.8,1)
-        
+
         item.text = item:CreateFontString("BotRoster_ItemHeader" .. i)
         item.text:SetPoint("TOPLEFT", item, "TOPLEFT", 20, 1)
         item.text:SetWidth(item:GetWidth())
@@ -215,7 +238,7 @@ function CreateBotRoster()
         item.text:SetFont("Fonts/FRIZQT__.TTF", 11, "OUTLINE")
         item.text:SetJustifyH("LEFT")
         item.text:SetText("Click!")
-        
+
         local cls = CreateFrame("Frame", "BotRoster_ItemHeader" .. i .. "Image", item)
         cls:SetPoint("TOPLEFT", item, "TOPLEFT", 3, -3)
         cls:SetWidth(16)
@@ -277,7 +300,7 @@ function CreateBotRoster()
         tb.buttons["leave"]:SetPoint("TOPLEFT", tb, "TOPLEFT", 16, 0)
         tb.buttons["whisper"]:SetPoint("TOPLEFT", tb, "TOPLEFT", 48, 0)
         tb.buttons["summon"]:SetPoint("TOPLEFT", tb, "TOPLEFT", 32, 0)
-        
+
         item:Hide()
         frame.items[i] = item
     end
@@ -313,16 +336,16 @@ function CreateBotRoster()
         }
     }, 5, 0, false)
     frame.toolbar["quickbar"]:SetBackdropBorderColor(0,0,0,0.0)
-    
+
     GroupToolBars["group_movement"] = CreateMovementToolBar(frame, 0, "group_movement", true, 5, 0, false)
     frame.toolbar["group_movement"]:SetBackdropBorderColor(0,0,0,0.0)
 
     GroupToolBars["group_formation"] = CreateFormationToolBar(frame, 0, "group_formation", true, 5, 0, false)
     frame.toolbar["group_formation"]:SetBackdropBorderColor(0,0,0,0.0)
-    
+
     GroupToolBars["group_savemana"] = CreateSaveManaToolBar(frame, 0, "group_savemana", true, 5, 0, false)
     frame.toolbar["group_savemana"]:SetBackdropBorderColor(0,0,0,0.0)
-    
+
     return frame
 end
 
@@ -388,56 +411,78 @@ function CreateRtiToolBar(frame, y, name, group, x, spacing, register)
 end
 
 function CreateMovementToolBar(frame, y, name, group, x, spacing, register)
-    return CreateToolBar(frame, -y, name, {
+    local tb = {
         ["follow_master"] = {
             icon = "follow_master",
-            command = {[0] = "nc +follow,?"},
+            command = {[0] = "follow", [1] = "nc ?", [2] = "co ?", [3] = "Follow me"},
             strategy = "follow",
             tooltip = "Follow main character",
             index = 0,
-            group = group
+            group = group,
+            emote = "follow"
         },
         ["stay"] = {
             icon = "stay",
-            command = {[0] = "nc +stay,?"},
+            command = {[0] = "stay", [1] = "nc ?", [2] = "co ?", [3] = "Wait here"},
             strategy = "stay",
             tooltip = "Stay in place",
             index = 1,
-            group = group
-        },
-        ["runaway"] = {
+            group = group,
+            emote = "wait"
+        }
+    }
+    local index = 2
+    if (not group) then
+        tb["runaway"] = {
             icon = "flee",
             command = {[0] = "co ~runaway,?"},
             strategy = "runaway",
             tooltip = "Run away from mobs",
-            index = 2,
+            index = index,
             group = group
-        },
-        ["guard"] = {
+        }
+        index = index + 1
+        tb["guard"] = {
             icon = "guard",
             command = {[0] = "nc +guard,?"},
             strategy = "guard",
             tooltip = "Guard pre-set place",
-            index = 3,
+            index = index,
             group = group
-        },
-        ["grind"] = {
+        }
+        index = index + 1
+        tb["grind"] = {
             icon = "grind",
             command = {[0] = "nc ~grind,?"},
             strategy = "grind",
             tooltip = "Aggresive mode (grinding)",
-            index = 4,
-            group = group
-        },
-        ["passive"] = {
-            icon = "passive",
-            command = {[0] = "nc ~passive,?", [1] = "co ~passive,?"},
-            strategy = "passive",
-            tooltip = "Passive mode",
-            index = 5,
+            index = index,
             group = group
         }
-    }, x, spacing, register)
+        index = index + 1
+    end
+
+    tb["passive"] = {
+        icon = "passive",
+        command = {[0] = "nc +passive,?", [1] = "co +passive,?", [2] = "Hold fire"},
+        strategy = "passive",
+        tooltip = "Passive mode",
+        index = index,
+        group = group
+    }
+    index = index + 1
+
+    tb["flee_passive"] = {
+        icon = "flee_passive",
+        command = {[0] = "flee", [1] = "nc ?", [2] = "co ?", [3] = "Flee"},
+        strategy = "",
+        tooltip = "Flee",
+        index = index,
+        group = group,
+        emote = "flee"
+    }
+    index = index + 1
+    return CreateToolBar(frame, -y, name, tb, x, spacing, register)
 end
 
 function CreateFormationToolBar(frame, y, name, group, x, spacing, register)
@@ -521,7 +566,7 @@ function CreateSelectedBotPanel()
     frame:SetBackdrop({
         bgFile = "Interface/DialogFrame/UI-DialogBox-Background",
         edgeFile="Interface/ChatFrame/ChatFrameBackground",
-        tile = true, tileSize = 16, edgeSize = 2, 
+        tile = true, tileSize = 16, edgeSize = 2,
         insets = { left = 0, right = 0, top = 0, bottom = 0 }
     })
     frame:SetBackdropBorderColor(0.5,0.1,0.7,1)
@@ -535,7 +580,7 @@ function CreateSelectedBotPanel()
     frame.header:SetBackdrop({
         bgFile = "Interface/DialogFrame/UI-DialogBox-Background",
         edgeFile="Interface/ChatFrame/ChatFrameBackground",
-        tile = true, tileSize = 16, edgeSize = 0, 
+        tile = true, tileSize = 16, edgeSize = 0,
         insets = { left = 2, right = 2, top = 2, bottom = 0 }
     })
     frame.header:SetBackdropBorderColor(0.5,0.1,0.7,1)
@@ -555,7 +600,7 @@ function CreateSelectedBotPanel()
     frame.header.role.texture = frame.header.role:CreateTexture(nil, "BACKGROUND")
     frame.header.role.texture:SetTexture("Interface/Addons/Mangosbot/Images/role_dps.tga")
     frame.header.role.texture:SetAllPoints()
-    
+
     EnablePositionSaving(frame, "SelectedBotPanel")
 
     local y = 25
@@ -614,7 +659,7 @@ function CreateSelectedBotPanel()
             index = 6
         }
     })
-    
+
     y = y + 25
     CreateFormationToolBar(frame, y, "formation", false, 5, 5, true)
 
@@ -652,7 +697,7 @@ function CreateSelectedBotPanel()
             index = 3
         }
     })
-    
+
     y = y + 25
     CreateToolBar(frame, -y, "attack_type", {
         ["tank_aoe"] = {
@@ -680,7 +725,7 @@ function CreateSelectedBotPanel()
 
     y = y + 25
     CreateRtiToolBar(frame, y, "rti", false, 5, 5, true)
-    
+
     y = y + 25
     CreateToolBar(frame, -y, "generic", {
         ["potions"] = {
@@ -705,7 +750,7 @@ function CreateSelectedBotPanel()
             index = 2
         }
     })
-    
+
     y = y + 25
     CreateToolBar(frame, -y, "CLASS_DRUID", {
         ["bear"] = {
@@ -1075,7 +1120,7 @@ function CreateSelectedBotPanel()
             index = 2
         }
     })
-    
+
     frame:SetHeight(y + 25)
     return frame
 end
@@ -1102,7 +1147,7 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
         local self = GetUnitName("player")
         if (name == nil or not UnitExists("target") or UnitIsEnemy("target", "player") or not UnitIsPlayer("target") or name == self) then
             SelectedBotPanel:Hide()
-        else 
+        else
             wait(0.1, function() SendChatMessage("nc ?", "WHISPER", nil, name) end)
             wait(0.2, function() SendChatMessage("co ?", "WHISPER", nil, name) end)
             wait(0.3, function() SendChatMessage("formation ?", "WHISPER", nil, name) end)
@@ -1111,7 +1156,7 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
             wait(0.6, function() SendChatMessage("save mana ?", "WHISPER", nil, name) end)
         end
     end
-        
+
     if (event == "CHAT_MSG_SYSTEM") then
         local message = arg1
         if (OnSystemMessage(message)) then
@@ -1136,17 +1181,17 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
                 if (first) then first = false
                 else allBots = allBots .. "," end
                 allBots = allBots .. key
-                
+
                 item.text:SetText(key)
-                
+
                 local filename = "Interface\\Addons\\Mangosbot\\Images\\cls_" .. string.lower(bot["class"]) ..".tga"
                 item.cls.texture:SetTexture(filename)
-                
+
                 local color = RAID_CLASS_COLORS[string.upper(bot["class"])]
                 item.text:SetTextColor(color.r, color.g, color.b, 1.0)
-                
+
                 item:SetPoint("TOPLEFT", BotRoster, "TOPLEFT", x, -y)
-                
+
                 local loginBtn = item.toolbar["quickbar"..index].buttons["login"]
                 loginBtn:Hide()
                 local logoutBtn = item.toolbar["quickbar"..index].buttons["logout"]
@@ -1209,79 +1254,79 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
                 summonBtn:SetScript("OnClick", function()
                     SendChatMessage("summon", "WHISPER", nil, summonBtn["key"])
                 end)
-                
-                
+
+
                 item:Show()
-                
+
                 index = index + 1
                 x = x + (5 + item:GetWidth())
                 height = item:GetHeight()
                 if (width < x) then width = x end
-                if (fmod((index - 1), colCount) == 0) then 
+                if (fmod((index - 1), colCount) == 0) then
                     y = y + (5 + height)
                     x = 5
                 end
             end
-            if (fmod((index - 1), colCount) ~= 0) then 
+            if (fmod((index - 1), colCount) ~= 0) then
                 y = y + (5 + height)
             end
-            
+
             local tb = BotRoster.toolbar["quickbar"]
             tb:SetPoint("TOPLEFT", BotRoster, "TOPLEFT", 5, -y)
             local loginAllBtn = tb.buttons["login_all"]
             x = 0
             loginAllBtn:SetPoint("TOPLEFT", tb, "TOPLEFT", x, 0)
-            if (not allBotsLoggedIn) then 
-                loginAllBtn:Show() 
+            if (not allBotsLoggedIn) then
+                loginAllBtn:Show()
                 x = x + 16
-            else 
-                loginAllBtn:Hide() 
+            else
+                loginAllBtn:Hide()
             end
             loginAllBtn["allBots"] = allBots
             loginAllBtn:SetScript("OnClick", function()
                 SendChatMessage(".bot add " .. loginAllBtn["allBots"], "SAY")
             end)
-            
+
             local logoutAllBtn = tb.buttons["logout_all"]
             logoutAllBtn:SetPoint("TOPLEFT", tb, "TOPLEFT", x, 0)
-            if (not allBotsLoggedOut) then 
-                logoutAllBtn:Show() 
+            if (not allBotsLoggedOut) then
+                logoutAllBtn:Show()
                 x = x + 16
-            else 
-                logoutAllBtn:Hide() 
+            else
+                logoutAllBtn:Hide()
             end
             logoutAllBtn["allBots"] = allBots
             logoutAllBtn:SetScript("OnClick", function()
                 SendChatMessage(".bot rm " .. logoutAllBtn["allBots"], "SAY")
             end)
-            
+
             local inviteAllBtn = tb.buttons["invite_all"]
             inviteAllBtn:SetPoint("TOPLEFT", tb, "TOPLEFT", x, 0)
-            if (not allBotsInParty) then 
-                inviteAllBtn:Show() 
+            if (not allBotsInParty) then
+                inviteAllBtn:Show()
                 x = x + 16
-            else 
-                inviteAllBtn:Hide() 
+            else
+                inviteAllBtn:Hide()
             end
             inviteAllBtn["key"] = key
             inviteAllBtn:SetScript("OnClick", function()
                 local timeout = 0.1
                 for key,bot in pairs(botTable) do
-                    wait(timeout, function(key) 
-                        InviteByName(key) 
+                    wait(timeout, function(key)
+                        InviteByName(key)
                     end, key)
                     timeout = timeout + 0.1
                 end
                 wait(1, function() SendChatMessage(".bot list", "SAY") end)
             end)
-            
+
             local leaveAllBtn = tb.buttons["leave_all"]
             leaveAllBtn:SetPoint("TOPLEFT", tb, "TOPLEFT", x, 0)
-            if (atLeastOneBotInParty) then 
-                leaveAllBtn:Show() 
+            if (atLeastOneBotInParty) then
+                leaveAllBtn:Show()
                 x = x + 16
-            else 
-                leaveAllBtn:Hide() 
+            else
+                leaveAllBtn:Hide()
             end
             leaveAllBtn["key"] = key
             leaveAllBtn:SetScript("OnClick", function()
@@ -1291,9 +1336,9 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
                     timeout = timeout + 0.1
                 end
             end)
-            
+
             local formationToolBar = BotRoster.toolbar["group_formation"]
-            if (atLeastOneBotInParty) then 
+            if (atLeastOneBotInParty) then
                 formationToolBar:Show()
                 y = y + 22
                 formationToolBar:SetPoint("TOPLEFT", BotRoster, "TOPLEFT", 5, -y)
@@ -1302,7 +1347,7 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
             end
 
             local movementToolBar = BotRoster.toolbar["group_movement"]
-            if (atLeastOneBotInParty) then 
+            if (atLeastOneBotInParty) then
                 movementToolBar:Show()
                 y = y + 22
                 movementToolBar:SetPoint("TOPLEFT", BotRoster, "TOPLEFT", 5, -y)
@@ -1311,7 +1356,7 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
             end
 
             local savemanaToolBar = BotRoster.toolbar["group_savemana"]
-            if (atLeastOneBotInParty) then 
+            if (atLeastOneBotInParty) then
                 savemanaToolBar:Show()
                 y = y + 22
                 savemanaToolBar:SetPoint("TOPLEFT", BotRoster, "TOPLEFT", 5, -y)
@@ -1324,13 +1369,13 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
             BotRoster:SetHeight(y + 22)
         end
     end
-    
+
     if (event == "CHAT_MSG_WHISPER") then
         local message = arg1
         local sender = arg2
 
         OnWhisper(message, sender)
-        
+
         if (string.find(message, "Hello") == 1 or string.find(message, "Goodbye") == 1) then
             SendChatMessage(".bot list", "SAY")
             SendChatMessage("formation ?", "PARTY")
@@ -1355,23 +1400,23 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
             wait(0.1, function() SendChatMessage("save mana ?", "WHISPER", nil, sender) end)
         end
         UpdateGroupToolBar()
-        
+
         local bot = botTable[sender]
-        if (bot == nil or bot["strategy"] == nil or bot["role"] == nil) then 
+        if (bot == nil or bot["strategy"] == nil or bot["role"] == nil) then
             SelectedBotPanel:Hide()
-            return 
+            return
         end
         local selected = GetUnitName("target")
         if (sender == selected) then
             SelectedBotPanel:Show()
-            
+
             local tmp, class = UnitClass("target")
             SetFrameColor(SelectedBotPanel, class)
-            
+
             local filename = "Interface\\Addons\\Mangosbot\\Images\\role_" .. bot["role"] .. ".tga"
             SelectedBotPanel.header.role.texture:SetTexture(filename)
             SelectedBotPanel.header.text:SetText(sender)
-            
+
             local width = 0
             local height = 0
             for toolbarName,toolbar in pairs(ToolBars) do
@@ -1496,7 +1541,7 @@ function OnWhisper(message, sender)
     if (botTable[sender] == nil) then
         botTable[sender] = {}
     end
-    
+
     local bot = botTable[sender]
     if (string.find(message, 'Strategies: ') == 1) then
         local list = {}
@@ -1547,7 +1592,7 @@ function OnSystemMessage(message)
             local pos = string.find(line, " ")
             local name = string.sub(line, 2, pos - 1)
             local cls = string.sub(line, pos + 1)
-            
+
             if (botTable[name] == nil) then
                 botTable[name] = {}
             end
@@ -1562,8 +1607,8 @@ end
 SLASH_MANGOSBOT1 = '/bot'
 function SlashCmdList.MANGOSBOT(msg, editbox) -- 4.
     if (msg == "" or msg == "roster") then
-        if (BotRoster:IsVisible()) then 
-            BotRoster:Hide() 
+        if (BotRoster:IsVisible()) then
+            BotRoster:Hide()
         else
             SendChatMessage(".bot list", "SAY")
             SendChatMessage("formation ?", "PARTY")
@@ -1617,4 +1662,4 @@ function print(s)
     if (s ~= nil) then DEFAULT_CHAT_FRAME:AddMessage(s); else DEFAULT_CHAT_FRAME:AddMessage("nil"); end
 end
 
-print("MangosBOT Addon is loaded"); 
+print("MangosBOT Addon is loaded");
