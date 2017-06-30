@@ -314,6 +314,9 @@ function CreateBotRoster()
     }, 5, 0, false)
     frame.toolbar["quickbar"]:SetBackdropBorderColor(0,0,0,0.0)
     
+    GroupToolBars["group_movement"] = CreateMovementToolBar(frame, 0, "group_movement", true, 5, 0, false)
+    frame.toolbar["group_movement"]:SetBackdropBorderColor(0,0,0,0.0)
+
     GroupToolBars["group_formation"] = CreateFormationToolBar(frame, 0, "group_formation", true, 5, 0, false)
     frame.toolbar["group_formation"]:SetBackdropBorderColor(0,0,0,0.0)
     
@@ -379,6 +382,59 @@ function CreateRtiToolBar(frame, y, name, group, x, spacing, register)
             rti = "diamond",
             tooltip = "Assign diamond mark",
             index = 6,
+            group = group
+        }
+    }, x, spacing, register)
+end
+
+function CreateMovementToolBar(frame, y, name, group, x, spacing, register)
+    return CreateToolBar(frame, -y, name, {
+        ["follow_master"] = {
+            icon = "follow_master",
+            command = {[0] = "nc +follow,?"},
+            strategy = "follow",
+            tooltip = "Follow main character",
+            index = 0,
+            group = group
+        },
+        ["stay"] = {
+            icon = "stay",
+            command = {[0] = "nc +stay,?"},
+            strategy = "stay",
+            tooltip = "Stay in place",
+            index = 1,
+            group = group
+        },
+        ["runaway"] = {
+            icon = "flee",
+            command = {[0] = "co ~runaway,?"},
+            strategy = "runaway",
+            tooltip = "Run away from mobs",
+            index = 2,
+            group = group
+        },
+        ["guard"] = {
+            icon = "guard",
+            command = {[0] = "nc +guard,?"},
+            strategy = "guard",
+            tooltip = "Guard pre-set place",
+            index = 3,
+            group = group
+        },
+        ["grind"] = {
+            icon = "grind",
+            command = {[0] = "nc ~grind,?"},
+            strategy = "grind",
+            tooltip = "Aggresive mode (grinding)",
+            index = 4,
+            group = group
+        },
+        ["passive"] = {
+            icon = "passive",
+            command = {[0] = "nc ~passive,?", [1] = "co ~passive,?"},
+            strategy = "passive",
+            tooltip = "Passive mode",
+            index = 5,
             group = group
         }
     }, x, spacing, register)
@@ -503,50 +559,7 @@ function CreateSelectedBotPanel()
     EnablePositionSaving(frame, "SelectedBotPanel")
 
     local y = 25
-    CreateToolBar(frame, -y, "movement", {
-        ["follow_master"] = {
-            icon = "follow_master",
-            command = {[0] = "nc +follow,?"},
-            strategy = "follow",
-            tooltip = "Follow main character",
-            index = 0
-        },
-        ["stay"] = {
-            icon = "stay",
-            command = {[0] = "nc +stay,?"},
-            strategy = "stay",
-            tooltip = "Stay in place",
-            index = 1
-        },
-        ["runaway"] = {
-            icon = "flee",
-            command = {[0] = "co ~runaway,?"},
-            strategy = "runaway",
-            tooltip = "Run away from mobs",
-            index = 2
-        },
-        ["guard"] = {
-            icon = "guard",
-            command = {[0] = "nc +guard,?"},
-            strategy = "guard",
-            tooltip = "Guard pre-set place",
-            index = 3
-        },
-        ["grind"] = {
-            icon = "grind",
-            command = {[0] = "nc ~grind,?"},
-            strategy = "grind",
-            tooltip = "Aggresive mode (grinding)",
-            index = 4
-        },
-        ["passive"] = {
-            icon = "passive",
-            command = {[0] = "nc ~passive,?", [1] = "co ~passive,?"},
-            strategy = "passive",
-            tooltip = "Passive mode",
-            index = 5
-        }
-    })
+    CreateMovementToolBar(frame, y, "movement", false, 5, 5, true)
 
     y = y + 25
     CreateToolBar(frame, -y, "actions", {
@@ -1288,6 +1301,15 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
                 formationToolBar:Hide()
             end
 
+            local movementToolBar = BotRoster.toolbar["group_movement"]
+            if (atLeastOneBotInParty) then 
+                movementToolBar:Show()
+                y = y + 22
+                movementToolBar:SetPoint("TOPLEFT", BotRoster, "TOPLEFT", 5, -y)
+            else
+                movementToolBar:Hide()
+            end
+
             local savemanaToolBar = BotRoster.toolbar["group_savemana"]
             if (atLeastOneBotInParty) then 
                 savemanaToolBar:Show()
@@ -1313,6 +1335,8 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
             SendChatMessage(".bot list", "SAY")
             SendChatMessage("formation ?", "PARTY")
             SendChatMessage("ll ?", "PARTY")
+            SendChatMessage("co ?", "PARTY")
+            SendChatMessage("nc ?", "PARTY")
             SendChatMessage("save mana ?", "PARTY")
         end
         if (string.find(message, "Following") == 1 or string.find(message, "Staying") == 1 or string.find(message, "Fleeing") == 1) then
@@ -1407,7 +1431,7 @@ function UpdateGroupToolBar()
         for buttonName,button in pairs(toolbar) do
             local toggle = false
             for key,bot in pairs(botTable) do
-                if (button["strategy"] ~= nil) then
+                if (button["strategy"] ~= nil and bot["strategy"] ~= nil) then
                     for key,strategy in pairs(bot["strategy"]["nc"]) do
                         if (strategy == button["strategy"]) then
                             toggle = true
@@ -1543,6 +1567,8 @@ function SlashCmdList.MANGOSBOT(msg, editbox) -- 4.
         else
             SendChatMessage(".bot list", "SAY")
             SendChatMessage("formation ?", "PARTY")
+            SendChatMessage("co ?", "PARTY")
+            SendChatMessage("nc ?", "PARTY")
             SendChatMessage("ll ?", "PARTY")
             SendChatMessage("save mana ?", "PARTY")
         end
