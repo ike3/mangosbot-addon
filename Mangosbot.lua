@@ -668,7 +668,7 @@ function CreateSelectedBotPanel()
         },
         ["set_guard"] = {
             icon = "set_guard",
-            command = {[0] = "position guard"},
+            command = {[0] = "position guard set"},
             strategy = "",
             tooltip = "Set guard position",
             index = 3
