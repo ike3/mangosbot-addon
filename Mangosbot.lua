@@ -421,7 +421,7 @@ function CreateMovementToolBar(frame, y, name, group, x, spacing, register)
             icon = "follow_master",
             command = {[0] = "follow", [1] = "nc ?", [2] = "co ?"},
             strategy = "follow",
-            tooltip = "Follow main character",
+            tooltip = "Follow me",
             index = 0,
             group = group,
             emote = "follow"
@@ -527,7 +527,7 @@ function CreateFormationToolBar(frame, y, name, group, x, spacing, register)
             icon = "formation_near",
             command = {[0] = "formation near"},
             formation = "near",
-            tooltip = "Follow main character",
+            tooltip = "Follow me",
             index = 0,
             group = group
         },
