@@ -687,12 +687,19 @@ function CreateSelectedBotPanel()
             tooltip = "Show bank",
             index = 5
         },
+        ["mail"] = {
+            icon = "mail",
+            command = {[0] = "mail ?"},
+            strategy = "",
+            tooltip = "Show mail",
+            index = 6
+        },
         ["los"] = {
             icon = "los",
             command = {[0] = "los gos"},
             strategy = "",
             tooltip = "Show nearby game objects",
-            index = 6
+            index = 7
         }
     })
 
