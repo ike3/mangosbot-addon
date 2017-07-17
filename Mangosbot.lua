@@ -516,6 +516,15 @@ function CreateMovementToolBar(frame, y, name, group, x, spacing, register)
             group = group
         }
         index = index + 1
+        tb["summon"] = {
+            icon = "summon",
+            command = {[0] = "summon"},
+            strategy = "",
+            tooltip = "Summon at meeting stone",
+            index = index,
+            group = group
+        }
+        index = index + 1
     end
 
     return CreateToolBar(frame, -y, name, tb, x, spacing, register)
@@ -672,34 +681,45 @@ function CreateSelectedBotPanel()
             strategy = "",
             tooltip = "Set guard position",
             index = 3
+        }
+    })
+
+    y = y + 25
+    CreateToolBar(frame, -y, "inventory", {
+        ["los"] = {
+            icon = "los",
+            command = {[0] = "los gos"},
+            strategy = "",
+            tooltip = "Show nearby game objects",
+            index = 0
         },
         ["count"] = {
             icon = "count",
             command = {[0] = "c"},
             strategy = "",
             tooltip = "Show inventory",
-            index = 4
+            index = 1
         },
         ["bank"] = {
             icon = "bank",
             command = {[0] = "bank"},
             strategy = "",
             tooltip = "Show bank",
-            index = 5
+            index = 2
+        },
+        ["spells"] = {
+            icon = "spells",
+            command = {[0] = "spells"},
+            strategy = "",
+            tooltip = "Show tradeskill",
+            index = 3
         },
         ["mail"] = {
             icon = "mail",
             command = {[0] = "mail ?"},
             strategy = "",
             tooltip = "Show mail",
-            index = 6
-        },
-        ["los"] = {
-            icon = "los",
-            command = {[0] = "los gos"},
-            strategy = "",
-            tooltip = "Show nearby game objects",
-            index = 7
+            index = 4
         }
     })
 
