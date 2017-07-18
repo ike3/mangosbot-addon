@@ -1,12 +1,20 @@
 local Mangosbot_EventFrame = CreateFrame("Frame")
 Mangosbot_EventFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
 Mangosbot_EventFrame:RegisterEvent("CHAT_MSG_WHISPER")
+Mangosbot_EventFrame:RegisterEvent("CHAT_MSG_ADDON")
 Mangosbot_EventFrame:RegisterEvent("CHAT_MSG_SYSTEM")
 Mangosbot_EventFrame:RegisterEvent("UPDATE")
 Mangosbot_EventFrame:Hide()
 
 local ToolBars = {}
 local GroupToolBars = {}
+function SendBotCommand(text, chat, lang, channel)
+    SendChatMessage(text, chat, lang, channel)
+end
+function SendBotAddonCommand(text, chat, lang, channel)
+    SendChatMessage("#a "..text, chat, lang, channel)
+end
+
 function CreateToolBar(frame, y, name, buttons, x, spacing, register)
     if (x == nil) then x = 5 end
     if (spacing == nil) then spacing = 5 end
@@ -107,15 +115,15 @@ function ToolBarButtonOnClick(btn, visual)
     if (btn["group"]) then
         local delay = 0
         for key, command in pairs(btn["command"]) do
-            wait(key, function(command) SendChatMessage(command, "PARTY") end, command)
+            wait(key, function(command) SendBotCommand(command, "PARTY") end, command)
             if (delay < key) then delay = key end
         end
         if (btn["tooltip"] ~= nil) then
-            wait(delay + 1, function(command) SendChatMessage(command, "PARTY") end, btn["tooltip"])
+            wait(delay + 1, function(command) SendBotCommand(command, "PARTY") end, btn["tooltip"])
         end
     else
         for key, command in pairs(btn["command"]) do
-            wait(key, function(command) SendChatMessage(command, "WHISPER", nil, GetUnitName("target")) end, command)
+            wait(key, function(command) SendBotCommand(command, "WHISPER", nil, GetUnitName("target")) end, command)
         end
     end
 end
@@ -1204,19 +1212,18 @@ local function fmod(a,b)
 end
 
 Mangosbot_EventFrame:SetScript("OnEvent", function(self)
-    --print(event)
     if (event == "PLAYER_TARGET_CHANGED") then
         local name = GetUnitName("target")
         local self = GetUnitName("player")
         if (name == nil or not UnitExists("target") or UnitIsEnemy("target", "player") or not UnitIsPlayer("target") or name == self) then
             SelectedBotPanel:Hide()
         else
-            wait(0.1, function() SendChatMessage("nc ?", "WHISPER", nil, name) end)
-            wait(0.2, function() SendChatMessage("co ?", "WHISPER", nil, name) end)
-            wait(0.3, function() SendChatMessage("formation ?", "WHISPER", nil, name) end)
-            wait(0.4, function() SendChatMessage("rti ?", "WHISPER", nil, name) end)
-            wait(0.5, function() SendChatMessage("ll ?", "WHISPER", nil, name) end)
-            wait(0.6, function() SendChatMessage("save mana ?", "WHISPER", nil, name) end)
+            wait(0.1, function() SendBotAddonCommand("nc ?", "WHISPER", nil, name) end)
+            wait(0.2, function() SendBotAddonCommand("co ?", "WHISPER", nil, name) end)
+            wait(0.3, function() SendBotAddonCommand("formation ?", "WHISPER", nil, name) end)
+            wait(0.4, function() SendBotAddonCommand("rti ?", "WHISPER", nil, name) end)
+            wait(0.5, function() SendBotAddonCommand("ll ?", "WHISPER", nil, name) end)
+            wait(0.6, function() SendBotAddonCommand("save mana ?", "WHISPER", nil, name) end)
         end
     end
 
@@ -1292,11 +1299,11 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
                 end
                 loginBtn["key"] = key
                 loginBtn:SetScript("OnClick", function()
-                    SendChatMessage(".bot add " .. loginBtn["key"], "SAY")
+                    SendBotCommand(".bot add " .. loginBtn["key"], "SAY")
                 end)
                 logoutBtn["key"] = key
                 logoutBtn:SetScript("OnClick", function()
-                    SendChatMessage(".bot rm " .. logoutBtn["key"], "SAY")
+                    SendBotCommand(".bot rm " .. logoutBtn["key"], "SAY")
                 end)
                 inviteBtn["key"] = key
                 inviteBtn:SetScript("OnClick", function()
@@ -1304,7 +1311,7 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
                 end)
                 leaveBtn["key"] = key
                 leaveBtn:SetScript("OnClick", function()
-                    SendChatMessage("leave", "WHISPER", nil, leaveBtn["key"])
+                    SendBotCommand("leave", "WHISPER", nil, leaveBtn["key"])
                 end)
                 whisperBtn["key"] = key
                 whisperBtn:SetScript("OnClick", function()
@@ -1315,7 +1322,7 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
                 end)
                 summonBtn["key"] = key
                 summonBtn:SetScript("OnClick", function()
-                    SendChatMessage("summon", "WHISPER", nil, summonBtn["key"])
+                    SendBotCommand("summon", "WHISPER", nil, summonBtn["key"])
                 end)
 
 
@@ -1347,7 +1354,7 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
             end
             loginAllBtn["allBots"] = allBots
             loginAllBtn:SetScript("OnClick", function()
-                SendChatMessage(".bot add " .. loginAllBtn["allBots"], "SAY")
+                SendBotCommand(".bot add " .. loginAllBtn["allBots"], "SAY")
             end)
 
             local logoutAllBtn = tb.buttons["logout_all"]
@@ -1360,7 +1367,7 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
             end
             logoutAllBtn["allBots"] = allBots
             logoutAllBtn:SetScript("OnClick", function()
-                SendChatMessage(".bot rm " .. logoutAllBtn["allBots"], "SAY")
+                SendBotCommand(".bot rm " .. logoutAllBtn["allBots"], "SAY")
             end)
 
             local inviteAllBtn = tb.buttons["invite_all"]
@@ -1380,7 +1387,7 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
                     end, key)
                     timeout = timeout + 0.1
                 end
-                wait(1, function() SendChatMessage(".bot list", "SAY") end)
+                wait(1, function() SendBotCommand(".bot list", "SAY") end)
             end)
 
             local leaveAllBtn = tb.buttons["leave_all"]
@@ -1395,7 +1402,7 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
             leaveAllBtn:SetScript("OnClick", function()
                 local timeout = 0.1
                 for key,bot in pairs(botTable) do
-                    wait(timeout, function(key) SendChatMessage("leave", "WHISPER", nil, key) end, key)
+                    wait(timeout, function(key) SendBotCommand("leave", "WHISPER", nil, key) end, key)
                     timeout = timeout + 0.1
                 end
             end)
@@ -1433,34 +1440,36 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
         end
     end
 
-    if (event == "CHAT_MSG_WHISPER") then
+    if (event == "CHAT_MSG_WHISPER" or event == "CHAT_MSG_ADDON") then
+        --print(event.." 1 "..arg1.." 2 "..arg2.." 3 "..arg3.." 4 "..arg4)
         local message = arg1
         local sender = arg2
+        if (event == "CHAT_MSG_ADDON") then sender = arg4 end
 
         OnWhisper(message, sender)
 
         if (string.find(message, "Hello") == 1 or string.find(message, "Goodbye") == 1) then
-            SendChatMessage(".bot list", "SAY")
-            SendChatMessage("formation ?", "PARTY")
-            SendChatMessage("ll ?", "PARTY")
-            SendChatMessage("co ?", "PARTY")
-            SendChatMessage("nc ?", "PARTY")
-            SendChatMessage("save mana ?", "PARTY")
+            SendBotCommand(".bot list", "SAY")
+            SendBotAddonCommand("formation ?", "PARTY")
+            SendBotAddonCommand("ll ?", "PARTY")
+            SendBotAddonCommand("co ?", "PARTY")
+            SendBotAddonCommand("nc ?", "PARTY")
+            SendBotAddonCommand("save mana ?", "PARTY")
         end
         if (string.find(message, "Following") == 1 or string.find(message, "Staying") == 1 or string.find(message, "Fleeing") == 1) then
-            wait(0.1, function() SendChatMessage("nc ?", "WHISPER", nil, sender) end)
+            wait(0.1, function() SendBotAddonCommand("nc ?", "WHISPER", nil, sender) end)
         end
         if (string.find(message, "Formation set to") == 1) then
-            wait(0.1, function() SendChatMessage("formation ?", "WHISPER", nil, sender) end)
+            wait(0.1, function() SendBotAddonCommand("formation ?", "WHISPER", nil, sender) end)
         end
         if (string.find(message, "Loot strategy set to ") == 1) then
-            wait(0.1, function() SendChatMessage("ll ?", "WHISPER", nil, sender) end)
+            wait(0.1, function() SendBotAddonCommand("ll ?", "WHISPER", nil, sender) end)
         end
         if (string.find(message, "RTI set to") == 1) then
-            wait(0.1, function() SendChatMessage("rti ?", "WHISPER", nil, sender) end)
+            wait(0.1, function() SendBotAddonCommand("rti ?", "WHISPER", nil, sender) end)
         end
         if (string.find(message, "save mana") == 1) then
-            wait(0.1, function() SendChatMessage("save mana ?", "WHISPER", nil, sender) end)
+            wait(0.1, function() SendBotAddonCommand("save mana ?", "WHISPER", nil, sender) end)
         end
         UpdateGroupToolBar()
 
@@ -1673,12 +1682,12 @@ function SlashCmdList.MANGOSBOT(msg, editbox) -- 4.
         if (BotRoster:IsVisible()) then
             BotRoster:Hide()
         else
-            SendChatMessage(".bot list", "SAY")
-            SendChatMessage("formation ?", "PARTY")
-            SendChatMessage("co ?", "PARTY")
-            SendChatMessage("nc ?", "PARTY")
-            SendChatMessage("ll ?", "PARTY")
-            SendChatMessage("save mana ?", "PARTY")
+            SendBotCommand(".bot list", "SAY")
+            SendBotAddonCommand("formation ?", "PARTY")
+            SendBotAddonCommand("co ?", "PARTY")
+            SendBotAddonCommand("nc ?", "PARTY")
+            SendBotAddonCommand("ll ?", "PARTY")
+            SendBotAddonCommand("save mana ?", "PARTY")
         end
     end
 end
