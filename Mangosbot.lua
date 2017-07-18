@@ -428,7 +428,7 @@ function CreateMovementToolBar(frame, y, name, group, x, spacing, register)
     local tb = {
         ["follow_master"] = {
             icon = "follow_master",
-            command = {[0] = "follow", [1] = "nc ?", [2] = "co ?"},
+            command = {[0] = "#a follow", [1] = "#a nc ?", [2] = "#a co ?"},
             strategy = "follow",
             tooltip = "Follow me",
             index = 0,
@@ -437,7 +437,7 @@ function CreateMovementToolBar(frame, y, name, group, x, spacing, register)
         },
         ["stay"] = {
             icon = "stay",
-            command = {[0] = "stay", [1] = "nc ?", [2] = "co ?"},
+            command = {[0] = "#a stay", [1] = "#a nc ?", [2] = "#a co ?"},
             strategy = "stay",
             tooltip = "Stay in place",
             index = 1,
@@ -449,7 +449,7 @@ function CreateMovementToolBar(frame, y, name, group, x, spacing, register)
     if (not group) then
         tb["runaway"] = {
             icon = "flee",
-            command = {[0] = "co ~runaway,?"},
+            command = {[0] = "#a co ~runaway,?"},
             strategy = "runaway",
             tooltip = "Run away from mobs",
             index = index,
@@ -458,7 +458,7 @@ function CreateMovementToolBar(frame, y, name, group, x, spacing, register)
         index = index + 1
         tb["guard"] = {
             icon = "guard",
-            command = {[0] = "nc +guard,?"},
+            command = {[0] = "#a nc +guard,?"},
             strategy = "guard",
             tooltip = "Guard pre-set place",
             index = index,
@@ -467,7 +467,7 @@ function CreateMovementToolBar(frame, y, name, group, x, spacing, register)
         index = index + 1
         tb["grind"] = {
             icon = "grind",
-            command = {[0] = "nc ~grind,?"},
+            command = {[0] = "#a nc ~grind,?"},
             strategy = "grind",
             tooltip = "Aggresive mode (grinding)",
             index = index,
@@ -478,7 +478,7 @@ function CreateMovementToolBar(frame, y, name, group, x, spacing, register)
 
     tb["passive"] = {
         icon = "passive",
-        command = {[0] = "nc +passive,?", [1] = "co +passive,?"},
+        command = {[0] = "#a nc +passive,?", [1] = "#a co +passive,?"},
         strategy = "passive",
         tooltip = "Passive mode",
         index = index,
@@ -488,7 +488,7 @@ function CreateMovementToolBar(frame, y, name, group, x, spacing, register)
 
     tb["flee_passive"] = {
         icon = "flee_passive",
-        command = {[0] = "flee", [1] = "nc ?", [2] = "co ?"},
+        command = {[0] = "#a flee", [1] = "#a nc ?", [2] = "#a co ?"},
         strategy = "",
         tooltip = "Flee",
         index = index,
@@ -518,7 +518,7 @@ function CreateMovementToolBar(frame, y, name, group, x, spacing, register)
         index = index + 1
         tb["pull"] = {
             icon = "tank_assist",
-            command = {[0] = "@dps flee", [1] = "@heal flee", [2] = "@tank d attack my target"},
+            command = {[0] = "#a @dps flee", [1] = "#a @heal flee", [2] = "#a @tank d attack my target"},
             strategy = "",
             tooltip = "Pull",
             index = index,
