@@ -9,10 +9,11 @@ Mangosbot_EventFrame:Hide()
 local ToolBars = {}
 local GroupToolBars = {}
 function SendBotCommand(text, chat, lang, channel)
+    if (chat == "PARTY" and GetNumPartyMembers() == 0) then return end
     SendChatMessage(text, chat, lang, channel)
 end
 function SendBotAddonCommand(text, chat, lang, channel)
-    SendChatMessage("#a "..text, chat, lang, channel)
+    SendBotCommand("#a "..text, chat, lang, channel)
 end
 
 function CreateToolBar(frame, y, name, buttons, x, spacing, register)
