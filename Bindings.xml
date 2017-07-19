@@ -2,6 +2,9 @@
   <Binding runOnUp="false" name="ROSTER" header="MANGOSBOT" default="F11">
     SlashCmdList.MANGOSBOT("", nil)
   </Binding>
+  <Binding runOnUp="false" name="DEBUG" header="MANGOSBOT" default="SHIFT+F11">
+    SlashCmdList.MANGOSBOT("debug", nil)
+  </Binding>
   <Binding runOnUp="false" name="FOLLOW" default="SHIFT+F">
     ClickGroupToolBarButton("group_movement", "follow_master")
   </Binding>

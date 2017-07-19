@@ -1204,9 +1204,110 @@ function SetFrameColor(frame, class)
     frame.header:SetBackdropBorderColor(color.r, color.g, color.b, 1.0)
 end
 
+local total = 0
+function BotDebugTimer(self, elapsed)
+    local elapsed = arg1
+    if (elapsed) then
+        total = total + elapsed
+        if total >= 1 then
+            local name = GetUnitName("target")
+            if (name) then
+                SendBotAddonCommand("debug action", "WHISPER", nil, name)
+            end
+            total = 0
+        end
+    end
+end
+
+local actionHistory = {}
+function CreateBotDebugPanel()
+    local frame = CreateFrame("Frame", "BotDebugPanel", UIParent)
+    frame:Hide()
+    frame:SetWidth(300)
+    frame:SetPoint("CENTER", UIParent, "CENTER")
+    frame:EnableMouse(true)
+    frame:SetMovable(true)
+    frame:SetFrameStrata("DIALOG")
+    frame:SetBackdropColor(0, 0, 0, 1.0)
+    frame:SetBackdrop({
+        bgFile = "Interface/DialogFrame/UI-DialogBox-Background",
+        edgeFile="Interface/ChatFrame/ChatFrameBackground",
+        tile = true, tileSize = 16, edgeSize = 2,
+        insets = { left = 0, right = 0, top = 0, bottom = 0 }
+    })
+    frame:SetBackdropBorderColor(0.5,0.1,0.7,1)
+    frame:RegisterForDrag("LeftButton")
+
+    frame.header = CreateFrame("Frame", "SelectedBotPanelHeader", frame)
+    frame.header:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, 0)
+    frame.header:SetWidth(frame:GetWidth())
+    frame.header:SetHeight(22)
+    frame.header:SetBackdropColor(0.5,0.1,0.7,1)
+    frame.header:SetBackdrop({
+        bgFile = "Interface/DialogFrame/UI-DialogBox-Background",
+        edgeFile="Interface/ChatFrame/ChatFrameBackground",
+        tile = true, tileSize = 16, edgeSize = 0,
+        insets = { left = 2, right = 2, top = 2, bottom = 0 }
+    })
+    frame.header:SetBackdropBorderColor(0.5,0.1,0.7,1)
+
+    frame.header.text = frame.header:CreateFontString("SelectedBotPanelHeaderText")
+    frame.header.text:SetPoint("TOPLEFT", frame, "TOPLEFT", 22, 0)
+    frame.header.text:SetWidth(frame.header:GetWidth())
+    frame.header.text:SetHeight(22)
+    frame.header.text:SetFont("Fonts/FRIZQT__.TTF", 11, "OUTLINE")
+    frame.header.text:SetJustifyH("LEFT")
+    frame.header.text:SetText("Debug Info")
+
+    local lines = 40
+    local lineSize = 12
+    for i = 1,lines do
+        local text = frame.header:CreateFontString("SelectedBotPanelHeaderText")
+        text:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, -5 -i * lineSize)
+        text:SetWidth(frame:GetWidth())
+        text:SetHeight(22)
+        text:SetFont("Fonts/FRIZQT__.TTF", 9, "OUTLINE")
+        text:SetJustifyH("LEFT")
+        text:SetText("Line"..i)
+        frame["text"..i] = text
+
+        actionHistory[i] = ""
+    end
+    frame:SetHeight(lines * lineSize + 30)
+
+    EnablePositionSaving(frame, "BotDebugPanel")
+
+    frame:SetScript("OnUpdate", BotDebugTimer)
+
+    return frame
+end
+
+function UpdateBotDebugPanel(message, sender)
+    local lines = 40
+    local splitted = string:split(message, "|")
+    local length = tablelength(splitted)
+    if (length > lines) then length = lines end
+
+    local first = lines - length + 1
+
+    for i = 1, first-1 do
+        local line = BotDebugPanel["text"..i]
+        local source = BotDebugPanel["text"..(lines - first + i + 1)]
+        line:SetText(source:GetText())
+    end
+
+    for i = first, lines do
+        local idx = i - first + 1
+        local name = trim2(splitted[idx])
+        local line = BotDebugPanel["text"..i]
+        line:SetText(name)
+    end
+end
+
 botTable = {}
 SelectedBotPanel = CreateSelectedBotPanel();
 BotRoster = CreateBotRoster();
+BotDebugPanel = CreateBotDebugPanel();
 
 local function fmod(a,b)
     return a - math.floor(a/b)*b
@@ -1449,6 +1550,10 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
 
         OnWhisper(message, sender)
 
+        if (BotDebugPanel:IsVisible()) then
+            UpdateBotDebugPanel(message, sender)
+        end
+
         if (string.find(message, "Hello") == 1 or string.find(message, "Goodbye") == 1) then
             SendBotCommand(".bot list", "SAY")
             SendBotAddonCommand("formation ?", "PARTY")
@@ -1689,6 +1794,13 @@ function SlashCmdList.MANGOSBOT(msg, editbox) -- 4.
             SendBotAddonCommand("nc ?", "PARTY")
             SendBotAddonCommand("ll ?", "PARTY")
             SendBotAddonCommand("save mana ?", "PARTY")
+        end
+    end
+    if (msg == "debug") then
+        if (BotDebugPanel:IsVisible()) then
+            BotDebugPanel:Hide()
+        else
+            BotDebugPanel:Show()
         end
     end
 end
