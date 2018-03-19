@@ -1220,6 +1220,7 @@ function BotDebugTimer(self, elapsed)
 end
 
 local actionHistory = {}
+local MaxDebugLines = 60
 function CreateBotDebugPanel()
     local frame = CreateFrame("Frame", "BotDebugPanel", UIParent)
     frame:Hide()
@@ -1259,13 +1260,12 @@ function CreateBotDebugPanel()
     frame.header.text:SetJustifyH("LEFT")
     frame.header.text:SetText("Debug Info")
 
-    local lines = 40
     local lineSize = 12
-    for i = 1,lines do
+    for i = 1,MaxDebugLines do
         local text = frame.header:CreateFontString("SelectedBotPanelHeaderText")
         text:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, -5 -i * lineSize)
         text:SetWidth(frame:GetWidth())
-        text:SetHeight(22)
+        text:SetHeight(18)
         text:SetFont("Fonts/FRIZQT__.TTF", 9, "OUTLINE")
         text:SetJustifyH("LEFT")
         text:SetText("Line"..i)
@@ -1273,7 +1273,7 @@ function CreateBotDebugPanel()
 
         actionHistory[i] = ""
     end
-    frame:SetHeight(lines * lineSize + 30)
+    frame:SetHeight(MaxDebugLines * lineSize + 30)
 
     EnablePositionSaving(frame, "BotDebugPanel")
 
@@ -1283,20 +1283,21 @@ function CreateBotDebugPanel()
 end
 
 function UpdateBotDebugPanel(message, sender)
-    local lines = 40
     local splitted = string:split(message, "|")
     local length = tablelength(splitted)
-    if (length > lines) then length = lines end
+    BotDebugPanel.header.text:SetText("Debug Info "..length)
+    
+    if (length > MaxDebugLines) then length = MaxDebugLines end
 
-    local first = lines - length + 1
+    local first = MaxDebugLines - length + 1
 
     for i = 1, first-1 do
         local line = BotDebugPanel["text"..i]
-        local source = BotDebugPanel["text"..(lines - first + i + 1)]
+        local source = BotDebugPanel["text"..(length + i)]
         line:SetText(source:GetText())
     end
 
-    for i = first, lines do
+    for i = first, MaxDebugLines do
         local idx = i - first + 1
         local name = trim2(splitted[idx])
         local line = BotDebugPanel["text"..i]
