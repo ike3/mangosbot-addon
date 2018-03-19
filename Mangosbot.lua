@@ -123,8 +123,10 @@ function ToolBarButtonOnClick(btn, visual)
             wait(delay + 1, function(command) SendBotCommand(command, "PARTY") end, btn["tooltip"])
         end
     else
+        local bot = GetUnitName("target")
+        if (bot == nil) then bot = CurrentBot end
         for key, command in pairs(btn["command"]) do
-            wait(key, function(command) SendBotCommand(command, "WHISPER", nil, GetUnitName("target")) end, command)
+            wait(key, function(command, bot) SendBotCommand(command, "WHISPER", nil, bot) end, command, bot)
         end
     end
 end
@@ -253,13 +255,23 @@ function CreateBotRoster()
         item.text:SetJustifyH("LEFT")
         item.text:SetText("Click!")
 
-        local cls = CreateFrame("Frame", "BotRoster_ItemHeader" .. i .. "Image", item)
+        local cls = CreateFrame("Button", "BotRoster_ItemHeader" .. i .. "Image", item)
         cls:SetPoint("TOPLEFT", item, "TOPLEFT", 3, -3)
         cls:SetWidth(16)
         cls:SetHeight(16)
+        cls:EnableMouse(true)
+        cls:RegisterForClicks("LeftButtonDown")
         cls.texture = cls:CreateTexture(nil, "BACKGROUND")
         cls.texture:SetTexture("Interface\\Addons\\Mangosbot\\Images\\role_dps.tga")
         cls.texture:SetAllPoints()
+        cls:SetScript("OnEnter", function(self)
+          GameTooltip:SetOwner(item, "ANCHOR_TOPLEFT", 0, -item:GetHeight() - 40)
+          GameTooltip:SetText("Bot Control Panel")
+          GameTooltip:Show()
+        end)
+        cls:SetScript("OnLeave", function(self)
+          GameTooltip:Hide()
+        end)
         item.cls = cls
 
         CreateToolBar(item, -18, "quickbar"..i, {
@@ -604,6 +616,7 @@ function StartChat()
     editBox:Show()
     editBox:SetFocus()
     local name = GetUnitName("target")
+    if (name == nil) then name = CurrentBot end
     editBox:SetText("/w " .. name .. " ")
 end
 
@@ -1199,6 +1212,9 @@ end
 
 function SetFrameColor(frame, class)
     local color = RAID_CLASS_COLORS[class]
+    if (color == nil) then
+        color = {r = 0.5, g = 0.1, b = 0.7};
+    end
     frame:SetBackdropBorderColor(color.r, color.g, color.b, 1.0)
     frame.header:SetBackdropColor(color.r, color.g, color.b, 1.0)
     frame.header:SetBackdropBorderColor(color.r, color.g, color.b, 1.0)
@@ -1309,24 +1325,30 @@ botTable = {}
 SelectedBotPanel = CreateSelectedBotPanel();
 BotRoster = CreateBotRoster();
 BotDebugPanel = CreateBotDebugPanel();
+CurrentBot = nil
 
 local function fmod(a,b)
     return a - math.floor(a/b)*b
+end
+
+function QuerySelectedBot(name)
+    wait(0.1, function() SendBotAddonCommand("nc ?", "WHISPER", nil, name) end)
+    wait(0.2, function() SendBotAddonCommand("co ?", "WHISPER", nil, name) end)
+    wait(0.3, function() SendBotAddonCommand("formation ?", "WHISPER", nil, name) end)
+    wait(0.4, function() SendBotAddonCommand("rti ?", "WHISPER", nil, name) end)
+    wait(0.5, function() SendBotAddonCommand("ll ?", "WHISPER", nil, name) end)
+    wait(0.6, function() SendBotAddonCommand("save mana ?", "WHISPER", nil, name) end)
 end
 
 Mangosbot_EventFrame:SetScript("OnEvent", function(self)
     if (event == "PLAYER_TARGET_CHANGED") then
         local name = GetUnitName("target")
         local self = GetUnitName("player")
-        if (name == nil or not UnitExists("target") or UnitIsEnemy("target", "player") or not UnitIsPlayer("target") or name == self) then
+        if (CurrentBot == nil and (name == nil or not UnitExists("target") or UnitIsEnemy("target", "player") or not UnitIsPlayer("target") or name == self)) then
             SelectedBotPanel:Hide()
         else
-            wait(0.1, function() SendBotAddonCommand("nc ?", "WHISPER", nil, name) end)
-            wait(0.2, function() SendBotAddonCommand("co ?", "WHISPER", nil, name) end)
-            wait(0.3, function() SendBotAddonCommand("formation ?", "WHISPER", nil, name) end)
-            wait(0.4, function() SendBotAddonCommand("rti ?", "WHISPER", nil, name) end)
-            wait(0.5, function() SendBotAddonCommand("ll ?", "WHISPER", nil, name) end)
-            wait(0.6, function() SendBotAddonCommand("save mana ?", "WHISPER", nil, name) end)
+            if (CurrentBot ~= name) then CurrentBot = nil end
+            QuerySelectedBot(name)
         end
     end
 
@@ -1356,6 +1378,16 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
                 allBots = allBots .. key
 
                 item.text:SetText(key)
+                item.cls["key"] = key
+                item.cls:SetScript("OnClick", function()
+                    if (CurrentBot == item.cls["key"]) then
+                        CurrentBot = nil
+                        SelectedBotPanel:Hide()
+                    else
+                        CurrentBot = item.cls["key"]
+                        QuerySelectedBot(CurrentBot)
+                    end
+                end)
 
                 local filename = "Interface\\Addons\\Mangosbot\\Images\\cls_" .. string.lower(bot["class"]) ..".tga"
                 item.cls.texture:SetTexture(filename)
@@ -1586,10 +1618,14 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
             return
         end
         local selected = GetUnitName("target")
+        if (CurrentBot ~= nil) then selected = CurrentBot end
         if (sender == selected) then
             SelectedBotPanel:Show()
 
-            local tmp, class = UnitClass("target")
+            local tmp, class = "Unknown";
+            if (GetUnitName("target") ~= nil) then
+                tmp,class = UnitClass("target")
+            end
             SetFrameColor(SelectedBotPanel, class)
 
             local filename = "Interface\\Addons\\Mangosbot\\Images\\role_" .. bot["role"] .. ".tga"
