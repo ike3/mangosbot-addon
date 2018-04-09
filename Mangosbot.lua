@@ -329,6 +329,7 @@ function CreateBotRoster()
 
         item:Hide()
         frame.items[i] = item
+        frame.ShowRequest = false
     end
 
     CreateToolBar(frame, 0, "quickbar", {
@@ -1355,7 +1356,10 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
     if (event == "CHAT_MSG_SYSTEM") then
         local message = arg1
         if (OnSystemMessage(message)) then
-            BotRoster:Show()
+            if (BotRoster.ShowRequest) then
+                BotRoster:Show()
+                BotRoster.ShowRequest = false
+            end
             for i = 1,10 do
                 BotRoster.items[i]:Hide()
             end
@@ -1825,6 +1829,7 @@ function SlashCmdList.MANGOSBOT(msg, editbox) -- 4.
         if (BotRoster:IsVisible()) then
             BotRoster:Hide()
         else
+            BotRoster.ShowRequest = true
             SendBotCommand(".bot list", "SAY")
             SendBotAddonCommand("formation ?", "PARTY")
             SendBotAddonCommand("co ?", "PARTY")
