@@ -1319,7 +1319,7 @@ function UpdateBotDebugPanel(message, sender)
     local splitted = string:split(message, "|")
     local length = tablelength(splitted)
     BotDebugPanel.header.text:SetText("Debug Info "..length)
-    
+
     if (length > MaxDebugLines) then length = MaxDebugLines end
 
     local first = MaxDebugLines - length + 1
@@ -1462,7 +1462,8 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
                 end)
                 inviteBtn["key"] = key
                 inviteBtn:SetScript("OnClick", function()
-                    InviteByName(inviteBtn["key"])
+                    InviteUnit(inviteBtn["key"])
+                    -- InviteByName(inviteBtn["key"])
                 end)
                 leaveBtn["key"] = key
                 leaveBtn:SetScript("OnClick", function()
@@ -1758,6 +1759,9 @@ function trim2(s)
 end
 
 function string:split( self, inSplitPattern, outResults )
+  if not inSplitPattern then
+    return
+  end
   if not outResults then
     outResults = { }
   end
