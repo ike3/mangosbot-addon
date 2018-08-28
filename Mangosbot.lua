@@ -1316,7 +1316,7 @@ function CreateBotDebugPanel()
 end
 
 function UpdateBotDebugPanel(message, sender)
-    local splitted = string:split(message, "|")
+    local splitted = splitString2(message, "|")
     local length = tablelength(splitted)
     BotDebugPanel.header.text:SetText("Debug Info "..length)
 
@@ -1758,7 +1758,7 @@ function trim2(s)
     return trim8(s)
 end
 
-function string:split( self, inSplitPattern, outResults )
+function splitString2( self, inSplitPattern, outResults )
   if not inSplitPattern then
     return
   end
@@ -1787,7 +1787,7 @@ function OnWhisper(message, sender)
         local type = "co"
         local role = "dps"
         local text = string.sub(message, 13)
-        local splitted = string:split(text, ", ")
+        local splitted = splitString2(text, ", ")
         for i = 1, tablelength(splitted) do
             local name = trim2(splitted[i])
             table.insert(list, name)
@@ -1824,7 +1824,7 @@ function OnSystemMessage(message)
     if (string.find(message, 'Bot roster: ') == 1) then
         botTable = {}
         local text = string.sub(message, 13)
-        local splitted = string:split(text, ", ")
+        local splitted = splitString2(text, ", ")
         for i = 1, tablelength(splitted) do
             local line = trim2(splitted[i])
             local on = string.sub(line, 1, 1)
