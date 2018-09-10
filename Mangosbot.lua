@@ -99,6 +99,16 @@ function ClickGroupToolBarButton(toolbar, button)
     ToolBarButtonOnClick(btn, false)
 end
 
+function OnKeyBindingDown(button)
+    local name = GetUnitName("target")
+    local self = GetUnitName("player")
+    if (CurrentBot == nil and (name == nil or not UnitExists("target") or UnitIsEnemy("target", "player") or not UnitIsPlayer("target") or name == self)) then
+        ClickGroupToolBarButton("group_movement", button)
+    else
+        ClickToolBarButton("movement", button)
+    end
+end
+
 function ToolBarButtonOnClick(btn, visual)
     if (btn["handler"] ~= nil) then
         btn["handler"]()
