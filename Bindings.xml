@@ -6,24 +6,24 @@
     SlashCmdList.MANGOSBOT("debug", nil)
   </Binding>
   <Binding runOnUp="false" name="FOLLOW" default="SHIFT+F">
-    ClickGroupToolBarButton("group_movement", "follow_master")
+    OnKeyBindingDown("follow_master")
   </Binding>
   <Binding runOnUp="false" name="STAY" default="SHIFT+G">
-    ClickGroupToolBarButton("group_movement", "stay")
+    OnKeyBindingDown("stay")
   </Binding>
   <Binding runOnUp="false" name="PASSIVE" default="SHIFT+P">
-    ClickGroupToolBarButton("group_movement", "passive")
+    OnKeyBindingDown("passive")
   </Binding>
   <Binding runOnUp="false" name="FLEE" default="SHIFT+H">
-    ClickGroupToolBarButton("group_movement", "flee_passive")
+    OnKeyBindingDown("flee_passive")
   </Binding>
   <Binding runOnUp="false" name="LOOT" default="SHIFT+J">
-    ClickGroupToolBarButton("group_movement", "loot")
+    OnKeyBindingDown("loot")
   </Binding>
   <Binding runOnUp="false" name="ATTACK" default="SHIFT+A">
-    ClickGroupToolBarButton("group_movement", "attack")
+    OnKeyBindingDown("attack")
   </Binding>
   <Binding runOnUp="false" name="PULL" default="SHIFT+T">
-    ClickGroupToolBarButton("group_movement", "pull")
+    OnKeyBindingDown("pull")
   </Binding>
 </Bindings>
