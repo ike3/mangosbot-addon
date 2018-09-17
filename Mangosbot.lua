@@ -730,6 +730,20 @@ function CreateSelectedBotPanel()
             strategy = "",
             tooltip = "Set guard position",
             index = 3
+        },
+        ["release"] = {
+            icon = "release",
+            command = {[0] = "release"},
+            strategy = "",
+            tooltip = "Release spirit",
+            index = 4
+        },
+        ["revive"] = {
+            icon = "revive",
+            command = {[0] = "revive"},
+            strategy = "",
+            tooltip = "Revive at Spirit Healer",
+            index = 5
         }
     })
 
