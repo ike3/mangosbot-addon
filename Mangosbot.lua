@@ -588,36 +588,20 @@ function CreateFormationToolBar(frame, y, name, group, x, spacing, register)
             index = 2,
             group = group
         },
+        ["far"] = {
+            icon = "formation_far",
+            command = {[0] = "formation far"},
+            formation = "far",
+            tooltip = "Maintain a distance",
+            index = 3,
+            group = group
+        },
         ["chaos"] = {
             icon = "formation_chaos",
             command = {[0] = "formation chaos"},
             formation = "chaos",
             tooltip = "Move freely",
-            index = 3,
-            group = group
-        },
-        ["line"] = {
-            icon = "formation_line",
-            command = {[0] = "formation line"},
-            formation = "line",
-            tooltip = "Form a line",
             index = 4,
-            group = group
-        },
-        ["queue"] = {
-            icon = "formation_queue",
-            command = {[0] = "formation queue"},
-            formation = "queue",
-            tooltip = "Form a queue",
-            index = 5,
-            group = group
-        },
-        ["circle"] = {
-            icon = "formation_circle",
-            command = {[0] = "formation circle"},
-            formation = "circle",
-            tooltip = "Form a big circle",
-            index = 6,
             group = group
         }
     }, x, spacing, register)
