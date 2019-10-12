@@ -897,6 +897,13 @@ function CreateSelectedBotPanel()
             strategy = "cure",
             tooltip = "Cure (poison, disease, etc.)",
             index = 4
+        },
+        ["melee"] = {
+            icon = "dps",
+            command = {[0] = "co ~melee,?"},
+            strategy = "melee",
+            tooltip = "Melee",
+            index = 5
         }
     })
     CreateToolBar(frame, -y, "CLASS_HUNTER", {
