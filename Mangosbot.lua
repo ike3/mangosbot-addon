@@ -8,6 +8,7 @@ Mangosbot_EventFrame:Hide()
 
 local ToolBars = {}
 local GroupToolBars = {}
+local CommandSeparator = "\\\\"
 function SendBotCommand(text, chat, lang, channel)
     if (chat == "PARTY" and GetNumPartyMembers() == 0) then return end
     SendChatMessage(text, chat, lang, channel)
@@ -125,19 +126,25 @@ function ToolBarButtonOnClick(btn, visual)
 
     if (btn["group"]) then
         local delay = 0
+        local first = true
+        local combined = ""
         for key, command in pairs(btn["command"]) do
-            wait(key, function(command) SendBotCommand(command, "PARTY") end, command)
-            if (delay < key) then delay = key end
+            combined = combined..command..CommandSeparator
         end
+        combined = string.sub(combined, 1, string.len(combined) - 2)
+        wait(0, function(combined) SendBotCommand(combined, "PARTY") end, combined)
         if (btn["tooltip"] ~= nil) then
             wait(delay + 1, function(command) SendBotCommand(command, "PARTY") end, btn["tooltip"])
         end
     else
         local bot = GetUnitName("target")
         if (bot == nil) then bot = CurrentBot end
+        local combined = ""
         for key, command in pairs(btn["command"]) do
-            wait(key, function(command, bot) SendBotCommand(command, "WHISPER", nil, bot) end, command, bot)
+            combined = combined..command..CommandSeparator
         end
+        combined = string.sub(combined, 1, string.len(combined) - 2)
+        wait(0, function(combined, bot) SendBotCommand(combined, "WHISPER", nil, bot) end, combined, bot)
     end
 end
 
@@ -1363,13 +1370,12 @@ local function fmod(a,b)
     return a - math.floor(a/b)*b
 end
 
+function QueryBotParty()
+    wait(0.1, function() SendBotCommand("#a formation ?"..CommandSeparator.."#a ll ?"..CommandSeparator.."#a co ?"..CommandSeparator.."#a nc ?"..CommandSeparator.."#a save mana ?"..CommandSeparator.."#a rti ?", "PARTY") end)
+end
+
 function QuerySelectedBot(name)
-    wait(0.1, function() SendBotAddonCommand("nc ?", "WHISPER", nil, name) end)
-    wait(0.2, function() SendBotAddonCommand("co ?", "WHISPER", nil, name) end)
-    wait(0.3, function() SendBotAddonCommand("formation ?", "WHISPER", nil, name) end)
-    wait(0.4, function() SendBotAddonCommand("rti ?", "WHISPER", nil, name) end)
-    wait(0.5, function() SendBotAddonCommand("ll ?", "WHISPER", nil, name) end)
-    wait(0.6, function() SendBotAddonCommand("save mana ?", "WHISPER", nil, name) end)
+    wait(0.1, function() SendBotCommand("#a formation ?"..CommandSeparator.."#a ll ?"..CommandSeparator.."#a co ?"..CommandSeparator.."#a nc ?"..CommandSeparator.."#a save mana ?"..CommandSeparator.."#a rti ?", "WHISPER", nil, name) end)
 end
 
 Mangosbot_EventFrame:SetScript("OnEvent", function(self)
@@ -1624,11 +1630,7 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
 
         if (string.find(message, "Hello") == 1 or string.find(message, "Goodbye") == 1) then
             SendBotCommand(".bot list", "SAY")
-            SendBotAddonCommand("formation ?", "PARTY")
-            SendBotAddonCommand("ll ?", "PARTY")
-            SendBotAddonCommand("co ?", "PARTY")
-            SendBotAddonCommand("nc ?", "PARTY")
-            SendBotAddonCommand("save mana ?", "PARTY")
+            QueryBotParty()
         end
         if (string.find(message, "Following") == 1 or string.find(message, "Staying") == 1 or string.find(message, "Fleeing") == 1) then
             wait(0.1, function() SendBotAddonCommand("nc ?", "WHISPER", nil, sender) end)
@@ -1865,11 +1867,7 @@ function SlashCmdList.MANGOSBOT(msg, editbox) -- 4.
         else
             BotRoster.ShowRequest = true
             SendBotCommand(".bot list", "SAY")
-            SendBotAddonCommand("formation ?", "PARTY")
-            SendBotAddonCommand("co ?", "PARTY")
-            SendBotAddonCommand("nc ?", "PARTY")
-            SendBotAddonCommand("ll ?", "PARTY")
-            SendBotAddonCommand("save mana ?", "PARTY")
+            QueryBotParty()
         end
     end
     if (msg == "debug") then
