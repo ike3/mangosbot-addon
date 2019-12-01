@@ -11,7 +11,11 @@ local GroupToolBars = {}
 local CommandSeparator = "\\\\"
 function SendBotCommand(text, chat, lang, channel)
     if (chat == "PARTY" and GetNumPartyMembers() == 0) then return end
-    SendChatMessage(text, chat, lang, channel)
+    if (chat == "PARTY") then 
+        SendAddonMessage("", text, chat, channel)
+    else
+        SendChatMessage(text, chat, lang, channel)
+    end
 end
 function SendBotAddonCommand(text, chat, lang, channel)
     SendBotCommand("#a "..text, chat, lang, channel)
