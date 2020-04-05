@@ -1027,54 +1027,12 @@ function CreateSelectedBotPanel()
             tooltip = "Healer mode",
             index = 2
         },
-        ["bmana"] = {
-            icon = "bmana",
-            command = {[0] = "co ~bmana,?", [1] = "nc ~bmana,?"},
-            strategy = "bmana",
-            tooltip = "Buff mana regen",
-            index = 3
-        },
-        ["bhealth"] = {
-            icon = "bhealth",
-            command = {[0] = "co ~bhealth,?"},
-            strategy = "bhealth",
-            tooltip = "Buff health regen",
-            index = 4
-        },
-        ["bdps"] = {
-            icon = "bdps",
-            command = {[0] = "co ~bdps,?", [1] = "nc ~bdps,?"},
-            strategy = "bdps",
-            tooltip = "Buff DPS",
-            index = 5
-        },
-        ["barmor"] = {
-            icon = "barmor",
-            command = {[0] = "co ~barmor,?", [1] = "nc ~barmor,?"},
-            strategy = "barmor",
-            tooltip = "Buff armor",
-            index = 6
-        },
-        ["bspeed"] = {
-            icon = "bspeed",
-            command = {[0] = "co ~bspeed,?", [1] = "nc ~bspeed,?"},
-            strategy = "bspeed",
-            tooltip = "Buff movement speed",
-            index = 7
-        },
-        ["bthreat"] = {
-            icon = "bthreat",
-            command = {[0] = "co ~bthreat,?", [1] = "nc ~bthreat,?"},
-            strategy = "bthreat",
-            tooltip = "Buff threat generation",
-            index = 8
-        },
         ["cure"] = {
             icon = "cure",
             command = {[0] = "co ~cure,?", [1] = "nc ~cure,?"},
             strategy = "cure",
             tooltip = "Cure (poison, disease, etc.)",
-            index = 9
+            index = 3
         }
     })
     CreateToolBar(frame, -y, "CLASS_PRIEST", {
@@ -1248,6 +1206,77 @@ function CreateSelectedBotPanel()
             index = 2
         }
     })
+    
+    y = y + 25
+    CreateToolBar(frame, -y, "CLASS_PALADIN_BUFF", {
+        ["bmana"] = {
+            icon = "bmana",
+            command = {[0] = "co +bmana,?", [1] = "nc +bmana,?"},
+            strategy = "bmana",
+            tooltip = "Buff mana regen",
+            index = 0
+        },
+        ["bhealth"] = {
+            icon = "bhealth",
+            command = {[0] = "co +bhealth,?", [1] = "nc +bhealth,?"},
+            strategy = "bhealth",
+            tooltip = "Buff health regen",
+            index = 1
+        },
+        ["bdps"] = {
+            icon = "bdps",
+            command = {[0] = "co +bdps,?", [1] = "nc +bdps,?"},
+            strategy = "bdps",
+            tooltip = "Buff melee DPS",
+            index = 2
+        },
+        ["bstats"] = {
+            icon = "holy",
+            command = {[0] = "co +bstats,?", [1] = "nc +bstats,?"},
+            strategy = "bstats",
+            tooltip = "Buff stats",
+            index = 3
+        }
+    })
+    y = y + 25
+    CreateToolBar(frame, -y, "CLASS_PALADIN_AURA", {
+        ["baoe"] = {
+            icon = "aoe",
+            command = {[0] = "co +baoe,?", [1] = "nc +baoe,?"},
+            strategy = "baoe",
+            tooltip = "Retribution aura",
+            index = 0
+        },
+        ["rfire"] = {
+            icon = "fire",
+            command = {[0] = "co +rfire,?", [1] = "nc +rfire,?"},
+            strategy = "rfire",
+            tooltip = "Fire resistance aura",
+            index = 1
+        },
+        ["rfrost"] = {
+            icon = "frost",
+            command = {[0] = "co +rfrost,?", [1] = "nc +rfrost,?"},
+            strategy = "rfrost",
+            tooltip = "Frost resistance aura",
+            index = 2
+        },
+        ["rshadow"] = {
+            icon = "shadow",
+            command = {[0] = "co +rshadow,?", [1] = "nc +rshadow,?"},
+            strategy = "rshadow",
+            tooltip = "Shadow resistance aura",
+            index = 3
+        },
+        ["barmor"] = {
+            icon = "barmor",
+            command = {[0] = "co +barmor,?", [1] = "nc +barmor,?"},
+            strategy = "barmor",
+            tooltip = "Devotion aura",
+            index = 4
+        }
+    })
+    
 
     frame:SetHeight(y + 25)
     return frame
@@ -1344,7 +1373,16 @@ end
 function UpdateBotDebugPanel(message, sender)
     local splitted = splitString2(message, "|")
     local length = tablelength(splitted)
-    BotDebugPanel.header.text:SetText("Debug Info "..length)
+    local filtered = {}
+    for i = 1, length do
+        local row = splitted[i];
+        if (string.find(row, BotDebugFilter)) then
+            table.insert(filtered, row)
+        end
+    end
+    
+    length = tablelength(filtered)
+    BotDebugPanel.header.text:SetText("Debug Info "..length..", Filter: "..BotDebugFilter)
     
     if (length > MaxDebugLines) then length = MaxDebugLines end
 
@@ -1358,7 +1396,7 @@ function UpdateBotDebugPanel(message, sender)
 
     for i = first, MaxDebugLines do
         local idx = i - first + 1
-        local name = trim2(splitted[idx])
+        local name = trim2(filtered[idx])
         local line = BotDebugPanel["text"..i]
         line:SetText(name)
     end
@@ -1369,6 +1407,7 @@ SelectedBotPanel = CreateSelectedBotPanel();
 BotRoster = CreateBotRoster();
 BotDebugPanel = CreateBotDebugPanel();
 CurrentBot = nil
+BotDebugFilter = ""
 
 local function fmod(a,b)
     return a - math.floor(a/b)*b
@@ -1678,7 +1717,7 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
             for toolbarName,toolbar in pairs(ToolBars) do
                 local panelVisible = true
                 if (string.find(toolbarName, "CLASS_") == 1) then
-                    if (string.sub(toolbarName, 7) == class) then
+                    if (string.find(string.sub(toolbarName, 7), class) == 1) then
                         SelectedBotPanel.toolbar[toolbarName]:Show()
                     else
                         SelectedBotPanel.toolbar[toolbarName]:Hide()
@@ -1874,11 +1913,13 @@ function SlashCmdList.MANGOSBOT(msg, editbox) -- 4.
             QueryBotParty()
         end
     end
-    if (msg == "debug") then
-        if (BotDebugPanel:IsVisible()) then
+    if (string.find(msg, "debug")) then
+        local cmd = string.sub(msg, 7)
+        if (string.len(cmd) == 0 and BotDebugPanel:IsVisible()) then
             BotDebugPanel:Hide()
         else
             BotDebugPanel:Show()
+            BotDebugFilter = cmd;
         end
     end
 end
