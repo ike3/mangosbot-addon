@@ -8,3 +8,4 @@ BINDING_NAME_FLEE = "Bot Movement: Flee";
 BINDING_NAME_LOOT = "Bot Actions: Loot";
 BINDING_NAME_ATTACK = "Bot Actions: Attack";
 BINDING_NAME_PULL = "Bot Actions: Pull";
+BINDING_NAME_BOOST = "Bot Actions: Toggle Boost";

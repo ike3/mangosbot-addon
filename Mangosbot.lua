@@ -531,6 +531,16 @@ function CreateMovementToolBar(frame, y, name, group, x, spacing, register)
     }
     index = index + 1
 
+    tb["boost"] = {
+        icon = "skull",
+        command = {[0] = "co ~boost,?"},
+        strategy = "boost",
+        tooltip = "Boost dps by using cooldowns",
+        index = index,
+        group = group
+    }
+    index = index + 1
+
     if (group) then
         tb["loot"] = {
             icon = "loot",
@@ -869,6 +879,13 @@ function CreateSelectedBotPanel()
             strategy = "cast time",
             tooltip = "Cast long spells cautiously",
             index = 2
+        },
+        ["buff"] = {
+            icon = "bdps",
+            command = {[0] = "nc ~buff,?"},
+            strategy = "buff",
+            tooltip = "Buff party members",
+            index = 3
         }
     })
 
@@ -1238,6 +1255,7 @@ function CreateSelectedBotPanel()
             index = 3
         }
     })
+    
     y = y + 25
     CreateToolBar(frame, -y, "CLASS_PALADIN_AURA", {
         ["baoe"] = {

@@ -26,4 +26,7 @@
   <Binding runOnUp="false" name="PULL" default="SHIFT+T">
     OnKeyBindingDown("pull")
   </Binding>
+  <Binding runOnUp="false" name="BOOST" default="SHIFT+V">
+    OnKeyBindingDown("boost")
+  </Binding>
 </Bindings>
