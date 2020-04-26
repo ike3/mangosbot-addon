@@ -403,7 +403,7 @@ function CreateRtiToolBar(frame, y, name, group, x, spacing, register)
             icon = "rti_skull",
             command = {[0] = "rti skull"},
             rti = "skull",
-            tooltip = "Assign skull mark",
+            tooltip = "Attack skull mark",
             index = 0,
             group = group
         },
@@ -411,7 +411,7 @@ function CreateRtiToolBar(frame, y, name, group, x, spacing, register)
             icon = "rti_cross",
             command = {[0] = "rti cross"},
             rti = "cross",
-            tooltip = "Assign cross mark",
+            tooltip = "Attack cross mark",
             index = 1,
             group = group
         },
@@ -419,7 +419,7 @@ function CreateRtiToolBar(frame, y, name, group, x, spacing, register)
             icon = "rti_circle",
             command = {[0] = "rti circle"},
             rti = "circle",
-            tooltip = "Assign circle mark",
+            tooltip = "Attack circle mark",
             index = 2,
             group = group
         },
@@ -427,7 +427,7 @@ function CreateRtiToolBar(frame, y, name, group, x, spacing, register)
             icon = "rti_star",
             command = {[0] = "rti star"},
             rti = "star",
-            tooltip = "Assign star mark",
+            tooltip = "Attack star mark",
             index = 3,
             group = group
         },
@@ -435,7 +435,7 @@ function CreateRtiToolBar(frame, y, name, group, x, spacing, register)
             icon = "rti_square",
             command = {[0] = "rti square"},
             rti = "square",
-            tooltip = "Assign square mark",
+            tooltip = "Attack square mark",
             index = 4,
             group = group
         },
@@ -443,7 +443,7 @@ function CreateRtiToolBar(frame, y, name, group, x, spacing, register)
             icon = "rti_triangle",
             command = {[0] = "rti triangle"},
             rti = "triangle",
-            tooltip = "Assign triangle mark",
+            tooltip = "Attack triangle mark",
             index = 5,
             group = group
         },
@@ -451,8 +451,85 @@ function CreateRtiToolBar(frame, y, name, group, x, spacing, register)
             icon = "rti_diamond",
             command = {[0] = "rti diamond"},
             rti = "diamond",
-            tooltip = "Assign diamond mark",
+            tooltip = "Attack diamond mark",
             index = 6,
+            group = group
+        },
+        ["rti_moon"] = {
+            icon = "rti_moon",
+            command = {[0] = "rti moon"},
+            rti = "moon",
+            tooltip = "Attack moon mark",
+            index = 7,
+            group = group
+        }
+    }, x, spacing, register)
+end
+
+function CreateRtiCcToolBar(frame, y, name, group, x, spacing, register)
+    return CreateToolBar(frame, -y, name, {
+        ["rti_skull"] = {
+            icon = "cc_skull",
+            command = {[0] = "rti cc skull"},
+            rti_cc = "skull",
+            tooltip = "CC skull mark",
+            index = 0,
+            group = group
+        },
+        ["rti_cross"] = {
+            icon = "cc_cross",
+            command = {[0] = "rti cc cross"},
+            rti_cc = "cross",
+            tooltip = "CC cross mark",
+            index = 1,
+            group = group
+        },
+        ["rti_circle"] = {
+            icon = "cc_circle",
+            command = {[0] = "rti cc circle"},
+            rti_cc = "circle",
+            tooltip = "CC circle mark",
+            index = 2,
+            group = group
+        },
+        ["rti_star"] = {
+            icon = "cc_star",
+            command = {[0] = "rti cc star"},
+            rti_cc = "star",
+            tooltip = "CC star mark",
+            index = 3,
+            group = group
+        },
+        ["rti_square"] = {
+            icon = "cc_square",
+            command = {[0] = "rti cc square"},
+            rti_cc = "square",
+            tooltip = "CC square mark",
+            index = 4,
+            group = group
+        },
+        ["rti_triangle"] = {
+            icon = "cc_triangle",
+            command = {[0] = "rti cc triangle"},
+            rti_cc = "triangle",
+            tooltip = "CC triangle mark",
+            index = 5,
+            group = group
+        },
+        ["rti_diamond"] = {
+            icon = "cc_diamond",
+            command = {[0] = "rti cc diamond"},
+            rti_cc = "diamond",
+            tooltip = "CC diamond mark",
+            index = 6,
+            group = group
+        },
+        ["rti_moon"] = {
+            icon = "cc_moon",
+            command = {[0] = "rti cc moon"},
+            rti_cc = "moon",
+            tooltip = "CC moon mark",
+            index = 7,
             group = group
         }
     }, x, spacing, register)
@@ -532,7 +609,7 @@ function CreateMovementToolBar(frame, y, name, group, x, spacing, register)
     index = index + 1
 
     tb["boost"] = {
-        icon = "skull",
+        icon = "boost",
         command = {[0] = "co ~boost,?"},
         strategy = "boost",
         tooltip = "Boost dps by using cooldowns",
@@ -858,6 +935,9 @@ function CreateSelectedBotPanel()
     CreateRtiToolBar(frame, y, "rti", false, 5, 5, true)
 
     y = y + 25
+    CreateRtiCcToolBar(frame, y, "rti cc", false, 5, 5, true)
+
+    y = y + 25
     CreateToolBar(frame, -y, "generic", {
         ["potions"] = {
             icon = "potions",
@@ -886,6 +966,20 @@ function CreateSelectedBotPanel()
             strategy = "buff",
             tooltip = "Buff party members",
             index = 3
+        },
+        ["loot"] = {
+            icon = "loot",
+            command = {[0] = "nc ~loot,?"},
+            strategy = "loot",
+            tooltip = "Enable looting",
+            index = 4
+        },
+        ["gather"] = {
+            icon = "gather",
+            command = {[0] = "nc ~gather,?"},
+            strategy = "gather",
+            tooltip = "Gather herbs, ore, etc.",
+            index = 5
         }
     })
 
@@ -942,18 +1036,18 @@ function CreateSelectedBotPanel()
             tooltip = "DPS mode",
             index = 0
         },
+        ["aoe"] = {
+            icon = "aoe",
+            command = {[0] = "co ~aoe,?"},
+            strategy = "aoe",
+            tooltip = "Use AOE abilities",
+            index = 1
+        },
         ["bspeed"] = {
             icon = "bspeed",
             command = {[0] = "co ~bspeed,?", [1] = "nc ~bspeed,?"},
             strategy = "bspeed",
             tooltip = "Buff movement speed",
-            index = 1
-        },
-        ["bmana"] = {
-            icon = "bmana",
-            command = {[0] = "co ~bmana,?", [1] = "nc ~bmana,?"},
-            strategy = "bmana",
-            tooltip = "Buff mana regen",
             index = 2
         },
         ["bdps"] = {
@@ -1702,8 +1796,11 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
         if (string.find(message, "Loot strategy set to ") == 1) then
             wait(0.1, function() SendBotAddonCommand("ll ?", "WHISPER", nil, sender) end)
         end
-        if (string.find(message, "RTI set to") == 1) then
+        if (string.find(message, "rti set to") == 1) then
             wait(0.1, function() SendBotAddonCommand("rti ?", "WHISPER", nil, sender) end)
+        end
+        if (string.find(message, "rti cc set to") == 1) then
+            wait(0.1, function() SendBotAddonCommand("rti cc ?", "WHISPER", nil, sender) end)
         end
         if (string.find(message, "save mana") == 1) then
             wait(0.1, function() SendBotAddonCommand("save mana ?", "WHISPER", nil, sender) end)
@@ -1765,6 +1862,9 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
                     if (button["rti"] ~= nil and bot["rti"] ~= nil and string.find(bot["rti"], button["rti"]) ~= nil) then
                         toggle = true
                     end
+                    if (button["rti_cc"] ~= nil and bot["rti_cc"] ~= nil and string.find(bot["rti_cc"], button["rti_cc"]) ~= nil) then
+                        toggle = true
+                    end
                     if (button["loot"] ~= nil and bot["loot"] ~= nil and string.find(bot["loot"], button["loot"]) ~= nil) then
                         toggle = true
                     end
@@ -1807,6 +1907,9 @@ function UpdateGroupToolBar()
                     toggle = true
                 end
                 if (button["rti"] ~= nil and bot["rti"] ~= nil and string.find(bot["rti"], button["rti"]) ~= nil) then
+                    toggle = true
+                end
+                if (button["rti_cc"] ~= nil and bot["rti_cc"] ~= nil and string.find(bot["rti_cc"], button["rti_cc"]) ~= nil) then
                     toggle = true
                 end
                 if (button["loot"] ~= nil and bot["loot"] ~= nil and string.find(bot["loot"], button["loot"]) ~= nil) then
@@ -1892,8 +1995,11 @@ function OnWhisper(message, sender)
     if (string.find(message, 'Loot strategy: ') == 1) then
         bot['loot'] = string.sub(message, 15)
     end
-    if (string.find(message, 'RTI: ') == 1) then
+    if (string.find(message, 'rti: ') == 1) then
         bot['rti'] = string.sub(message, 5)
+    end
+    if (string.find(message, 'rti cc: ') == 1) then
+        bot['rti_cc'] = string.sub(message, 5)
     end
 end
 
