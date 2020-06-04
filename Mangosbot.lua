@@ -608,16 +608,6 @@ function CreateMovementToolBar(frame, y, name, group, x, spacing, register)
     }
     index = index + 1
 
-    tb["boost"] = {
-        icon = "boost",
-        command = {[0] = "co ~boost,?"},
-        strategy = "boost",
-        tooltip = "Boost dps by using cooldowns",
-        index = index,
-        group = group
-    }
-    index = index + 1
-
     if (group) then
         tb["loot"] = {
             icon = "loot",
@@ -939,6 +929,37 @@ function CreateSelectedBotPanel()
 
     y = y + 25
     CreateToolBar(frame, -y, "generic", {
+        ["food"] = {
+            icon = "food",
+            command = {[0] = "nc ~food,?"},
+            strategy = "food",
+            tooltip = "Use food and drinks",
+            index = 0
+        },
+        ["buff"] = {
+            icon = "bdps",
+            command = {[0] = "nc ~buff,?"},
+            strategy = "buff",
+            tooltip = "Buff party members",
+            index = 1
+        },
+        ["loot"] = {
+            icon = "loot",
+            command = {[0] = "nc ~loot,?"},
+            strategy = "loot",
+            tooltip = "Enable looting",
+            index = 2
+        },
+        ["gather"] = {
+            icon = "gather",
+            command = {[0] = "nc ~gather,?"},
+            strategy = "gather",
+            tooltip = "Gather herbs, ore, etc.",
+            index = 3
+        }
+    })
+    y = y + 25
+    CreateToolBar(frame, -y, "generic_combat", {
         ["potions"] = {
             icon = "potions",
             command = {[0] = "co ~potions,?"},
@@ -946,40 +967,33 @@ function CreateSelectedBotPanel()
             tooltip = "Use health and mana potions",
             index = 0
         },
-        ["food"] = {
-            icon = "food",
-            command = {[0] = "nc ~food,?"},
-            strategy = "food",
-            tooltip = "Use food and drinks",
-            index = 1
-        },
         ["cast_time"] = {
             icon = "cast_time",
             command = {[0] = "co ~cast time,?"},
             strategy = "cast time",
             tooltip = "Cast long spells cautiously",
+            index = 1
+        },
+        ["mark_rti"] = {
+            icon = "mark_rti",
+            command = {[0] = "co ~mark rti,?"},
+            strategy = "mark rti",
+            tooltip = "Mark current target with raid icon",
             index = 2
         },
-        ["buff"] = {
-            icon = "bdps",
-            command = {[0] = "nc ~buff,?"},
-            strategy = "buff",
-            tooltip = "Buff party members",
+        ["ads"] = {
+            icon = "ads",
+            command = {[0] = "co ~ads,?", [1] = "nc ~ads,?"},
+            strategy = "ads",
+            tooltip = "Flee if ads might be pulled",
             index = 3
         },
-        ["loot"] = {
-            icon = "loot",
-            command = {[0] = "nc ~loot,?"},
-            strategy = "loot",
-            tooltip = "Enable looting",
+        ["boost"] = {
+            icon = "boost",
+            command = {[0] = "co ~boost,?"},
+            strategy = "boost",
+            tooltip = "Boost dps by using cooldowns",
             index = 4
-        },
-        ["gather"] = {
-            icon = "gather",
-            command = {[0] = "nc ~gather,?"},
-            strategy = "gather",
-            tooltip = "Gather herbs, ore, etc.",
-            index = 5
         }
     })
 
@@ -1188,6 +1202,13 @@ function CreateSelectedBotPanel()
             strategy = "cure",
             tooltip = "Cure (poison, disease, etc.)",
             index = 5
+        },
+        ["rshadow"] = {
+            icon = "rshadow",
+            command = {[0] = "co ~rshadow,?", [1] = "nc ~rshadow,?"},
+            strategy = "rshadow",
+            tooltip = "Provide shadow resistance",
+            index = 6
         }
     })
     CreateToolBar(frame, -y, "CLASS_ROGUE", {
@@ -1197,6 +1218,13 @@ function CreateSelectedBotPanel()
             strategy = "dps",
             tooltip = "DPS mode",
             index = 0
+        },
+        ["aoe"] = {
+            icon = "aoe",
+            command = {[0] = "co ~aoe,?"},
+            strategy = "aoe",
+            tooltip = "Use AOE abilities",
+            index = 1
         }
     })
     CreateToolBar(frame, -y, "CLASS_SHAMAN", {
@@ -1374,7 +1402,7 @@ function CreateSelectedBotPanel()
             index = 2
         },
         ["rshadow"] = {
-            icon = "shadow",
+            icon = "rshadow",
             command = {[0] = "co +rshadow,?", [1] = "nc +rshadow,?"},
             strategy = "rshadow",
             tooltip = "Shadow resistance aura",
