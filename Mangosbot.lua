@@ -912,12 +912,26 @@ function CreateSelectedBotPanel()
             tooltip = "Assist others",
             index = 1
         },
+        ["close"] = {
+            icon = "close",
+            command = {[0] = "co ~close,?"},
+            strategy = "close",
+            tooltip = "Melee combat",
+            index = 2
+        },
+        ["ranged"] = {
+            icon = "ranged",
+            command = {[0] = "co ~ranged,?"},
+            strategy = "ranged",
+            tooltip = "Ranged combat",
+            index = 3
+        },
         ["threat"] = {
             icon = "threat",
             command = {[0] = "co ~threat,?"},
             strategy = "threat",
             tooltip = "Keep threat level low",
-            index = 2
+            index = 4
         }
     })
 
