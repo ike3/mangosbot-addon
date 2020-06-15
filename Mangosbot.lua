@@ -985,7 +985,7 @@ function CreateSelectedBotPanel()
             icon = "cast_time",
             command = {[0] = "co ~cast time,?"},
             strategy = "cast time",
-            tooltip = "Cast long spells cautiously",
+            tooltip = "Do not cast long spells on almost dead targets",
             index = 1
         },
         ["mark_rti"] = {
@@ -1008,6 +1008,13 @@ function CreateSelectedBotPanel()
             strategy = "boost",
             tooltip = "Boost dps by using cooldowns",
             index = 4
+        },
+        ["cc"] = {
+            icon = "cc",
+            command = {[0] = "co ~cc,?"},
+            strategy = "cc",
+            tooltip = "Use crowd control abilities",
+            index = 5
         }
     })
 
