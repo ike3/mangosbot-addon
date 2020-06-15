@@ -152,9 +152,11 @@ function ToolBarButtonOnClick(btn, visual)
     end
 end
 
-function ToggleButton(frame, toolbar, button, toggle)
+function ToggleButton(frame, toolbar, button, toggle, mixed)
     local btn = frame.toolbar[toolbar].buttons[button]
-    if (toggle) then
+    if (toggle and mixed) then
+        btn:SetBackdropBorderColor(0.2, 0.4, 0.2, 1.0)
+    elseif (toggle) then
         btn:SetBackdropBorderColor(0.2, 1.0, 0.2, 1.0)
     else
         btn:SetBackdropBorderColor(0, 0, 0, 0.0)
@@ -393,6 +395,12 @@ function CreateBotRoster()
 
     GroupToolBars["group_savemana"] = CreateSaveManaToolBar(frame, 0, "group_savemana", true, 5, 0, false)
     frame.toolbar["group_savemana"]:SetBackdropBorderColor(0,0,0,0.0)
+
+    GroupToolBars["group_generic"] = CreateGenericNonCombatToolBar(frame, 0, "group_generic", true, 5, 0, false)
+    frame.toolbar["group_generic"]:SetBackdropBorderColor(0,0,0,0.0)
+
+    GroupToolBars["group_generic_combat"] = CreateGenericCombatToolBar(frame, 0, "group_generic_combat", true, 5, 0, false)
+    frame.toolbar["group_generic_combat"]:SetBackdropBorderColor(0,0,0,0.0)
 
     return frame
 end
@@ -695,6 +703,96 @@ function CreateFormationToolBar(frame, y, name, group, x, spacing, register)
     }, x, spacing, register)
 end
 
+function CreateGenericNonCombatToolBar(frame, y, name, group, x, spacing, register)
+    return CreateToolBar(frame, -y, name, {
+        ["food"] = {
+            icon = "food",
+            command = {[0] = "nc ~food,?"},
+            strategy = "food",
+            tooltip = "Use food and drinks",
+            index = 0,
+            group = group
+        },
+        ["buff"] = {
+            icon = "bdps",
+            command = {[0] = "nc ~buff,?"},
+            strategy = "buff",
+            tooltip = "Buff party members",
+            index = 1,
+            group = group
+        },
+        ["loot"] = {
+            icon = "loot",
+            command = {[0] = "nc ~loot,?"},
+            strategy = "loot",
+            tooltip = "Enable looting",
+            index = 2,
+            group = group
+        },
+        ["gather"] = {
+            icon = "gather",
+            command = {[0] = "nc ~gather,?"},
+            strategy = "gather",
+            tooltip = "Gather herbs, ore, etc.",
+            index = 3,
+            group = group
+        }
+    }, x, spacing, register)
+end
+
+function CreateGenericCombatToolBar(frame, y, name, group, x, spacing, register)
+    return CreateToolBar(frame, -y, name, {
+        ["potions"] = {
+            icon = "potions",
+            command = {[0] = "co ~potions,?"},
+            strategy = "potions",
+            tooltip = "Use health and mana potions",
+            index = 0,
+            group = group
+        },
+        ["cast_time"] = {
+            icon = "cast_time",
+            command = {[0] = "co ~cast time,?"},
+            strategy = "cast time",
+            tooltip = "Do not cast long spells on almost dead targets",
+            index = 1,
+            group = group
+        },
+        ["mark_rti"] = {
+            icon = "mark_rti",
+            command = {[0] = "co ~mark rti,?"},
+            strategy = "mark rti",
+            tooltip = "Mark current target with raid icon",
+            index = 2,
+            group = group
+        },
+        ["ads"] = {
+            icon = "ads",
+            command = {[0] = "co ~ads,?", [1] = "nc ~ads,?"},
+            strategy = "ads",
+            tooltip = "Flee if ads might be pulled",
+            index = 3,
+            group = group
+        },
+        ["boost"] = {
+            icon = "boost",
+            command = {[0] = "co ~boost,?"},
+            strategy = "boost",
+            tooltip = "Boost dps by using cooldowns",
+            index = 4,
+            group = group
+        },
+        ["cc"] = {
+            icon = "cc",
+            command = {[0] = "co ~cc,?"},
+            strategy = "cc",
+            tooltip = "Use crowd control abilities",
+            index = 5,
+            group = group
+        }
+    }, x, spacing, register)
+end
+
 function CreateSaveManaToolBar(frame, y, name, group, x, spacing, register)
     local buttons = {};
     for i = 1, 5 do
@@ -942,81 +1040,10 @@ function CreateSelectedBotPanel()
     CreateRtiCcToolBar(frame, y, "rti cc", false, 5, 5, true)
 
     y = y + 25
-    CreateToolBar(frame, -y, "generic", {
-        ["food"] = {
-            icon = "food",
-            command = {[0] = "nc ~food,?"},
-            strategy = "food",
-            tooltip = "Use food and drinks",
-            index = 0
-        },
-        ["buff"] = {
-            icon = "bdps",
-            command = {[0] = "nc ~buff,?"},
-            strategy = "buff",
-            tooltip = "Buff party members",
-            index = 1
-        },
-        ["loot"] = {
-            icon = "loot",
-            command = {[0] = "nc ~loot,?"},
-            strategy = "loot",
-            tooltip = "Enable looting",
-            index = 2
-        },
-        ["gather"] = {
-            icon = "gather",
-            command = {[0] = "nc ~gather,?"},
-            strategy = "gather",
-            tooltip = "Gather herbs, ore, etc.",
-            index = 3
-        }
-    })
+    CreateGenericNonCombatToolBar(frame, y, "generic", false, 5, 5, true)
+
     y = y + 25
-    CreateToolBar(frame, -y, "generic_combat", {
-        ["potions"] = {
-            icon = "potions",
-            command = {[0] = "co ~potions,?"},
-            strategy = "potions",
-            tooltip = "Use health and mana potions",
-            index = 0
-        },
-        ["cast_time"] = {
-            icon = "cast_time",
-            command = {[0] = "co ~cast time,?"},
-            strategy = "cast time",
-            tooltip = "Do not cast long spells on almost dead targets",
-            index = 1
-        },
-        ["mark_rti"] = {
-            icon = "mark_rti",
-            command = {[0] = "co ~mark rti,?"},
-            strategy = "mark rti",
-            tooltip = "Mark current target with raid icon",
-            index = 2
-        },
-        ["ads"] = {
-            icon = "ads",
-            command = {[0] = "co ~ads,?", [1] = "nc ~ads,?"},
-            strategy = "ads",
-            tooltip = "Flee if ads might be pulled",
-            index = 3
-        },
-        ["boost"] = {
-            icon = "boost",
-            command = {[0] = "co ~boost,?"},
-            strategy = "boost",
-            tooltip = "Boost dps by using cooldowns",
-            index = 4
-        },
-        ["cc"] = {
-            icon = "cc",
-            command = {[0] = "co ~cc,?"},
-            strategy = "cc",
-            tooltip = "Use crowd control abilities",
-            index = 5
-        }
-    })
+    CreateGenericCombatToolBar(frame, y, "generic_combat", false, 5, 5, true)
 
     y = y + 25
     CreateToolBar(frame, -y, "CLASS_DRUID", {
@@ -1575,7 +1602,7 @@ local function fmod(a,b)
 end
 
 function QueryBotParty()
-    wait(0.1, function() SendBotCommand("#a formation ?"..CommandSeparator.."#a ll ?"..CommandSeparator.."#a co ?"..CommandSeparator.."#a nc ?"..CommandSeparator.."#a save mana ?"..CommandSeparator.."#a rti ?", "PARTY") end)
+    wait(0.1, function() SendBotCommand("#a ll ?"..CommandSeparator.."#a formation ?"..CommandSeparator.."#a co ?"..CommandSeparator.."#a nc ?"..CommandSeparator.."#a save mana ?", "PARTY") end)
 end
 
 function QuerySelectedBot(name)
@@ -1814,6 +1841,24 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
                 savemanaToolBar:Hide()
             end
 
+            local genericToolBar = BotRoster.toolbar["group_generic"]
+            if (atLeastOneBotInParty) then
+                genericToolBar:Show()
+                y = y + 22
+                genericToolBar:SetPoint("TOPLEFT", BotRoster, "TOPLEFT", 5, -y)
+            else
+                genericToolBar:Hide()
+            end
+
+            local genericCombatToolBar = BotRoster.toolbar["group_generic_combat"]
+            if (atLeastOneBotInParty) then
+                genericCombatToolBar:Show()
+                y = y + 22
+                genericCombatToolBar:SetPoint("TOPLEFT", BotRoster, "TOPLEFT", 5, -y)
+            else
+                genericCombatToolBar:Hide()
+            end
+
             UpdateGroupToolBar()
             BotRoster:SetWidth(width)
             BotRoster:SetHeight(y + 22)
@@ -1936,8 +1981,9 @@ end)
 function UpdateGroupToolBar()
     for toolbarName,toolbar in pairs(GroupToolBars) do
         for buttonName,button in pairs(toolbar) do
-            local toggle = false
-            for key,bot in pairs(botTable) do
+            local toggleCount = 0
+            for botName,bot in pairs(botTable) do
+                local toggle = false
                 if (button["strategy"] ~= nil and bot["strategy"] ~= nil) then
                     for key,strategy in pairs(bot["strategy"]["nc"]) do
                         if (strategy == button["strategy"]) then
@@ -1967,8 +2013,16 @@ function UpdateGroupToolBar()
                 if (button["savemana"] ~= nil and bot["savemana"] ~= nil and string.find(bot["savemana"], button["savemana"]) ~= nil) then
                     toggle = true
                 end
+                
+                if (toggle) then 
+                    for i = 1,5 do
+                        if (UnitName("party"..i) == botName) then
+                            toggleCount = toggleCount + 1
+                        end
+                    end
+                end
             end
-            ToggleButton(BotRoster, toolbarName, buttonName, toggle)
+            ToggleButton(BotRoster, toolbarName, buttonName, toggleCount > 0, toggleCount < GetNumPartyMembers())
         end
     end
 end
