@@ -1206,6 +1206,13 @@ function CreateSelectedBotPanel()
             strategy = "cure",
             tooltip = "Cure (poison, disease, etc.)",
             index = 3
+        },
+        ["bthreat"] = {
+            icon = "bthreat",
+            command = {[0] = "nc ~bthreat,?"},
+            strategy = "bthreat",
+            tooltip = "Increase threat generation",
+            index = 4
         }
     })
     CreateToolBar(frame, -y, "CLASS_PRIEST", {
