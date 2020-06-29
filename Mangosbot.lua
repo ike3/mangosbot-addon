@@ -1118,6 +1118,13 @@ function CreateSelectedBotPanel()
             strategy = "bdps",
             tooltip = "Buff DPS",
             index = 3
+        },
+        ["pet"] = {
+            icon = "pet",
+            command = {[0] = "co ~pet,?", [1] = "nc ~pet,?"},
+            strategy = "pet",
+            tooltip = "Use pet",
+            index = 4
         }
     })
     CreateToolBar(frame, -y, "CLASS_MAGE", {
@@ -1375,6 +1382,13 @@ function CreateSelectedBotPanel()
             strategy = "tank",
             tooltip = "Summon tanky demons",
             index = 3
+        },
+        ["pet"] = {
+            icon = "pet",
+            command = {[0] = "co ~pet,?", [1] = "nc ~pet,?"},
+            strategy = "pet",
+            tooltip = "Use pet",
+            index = 4
         }
     })
     CreateToolBar(frame, -y, "CLASS_WARRIOR", {
