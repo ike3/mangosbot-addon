@@ -10,8 +10,9 @@ local ToolBars = {}
 local GroupToolBars = {}
 local CommandSeparator = "\\\\"
 function SendBotCommand(text, chat, lang, channel)
-    if (chat == "PARTY" and GetNumPartyMembers() == 0) then return end
+    if (chat == "PARTY" and partySize() == 0) then return end
     if (chat == "PARTY") then 
+        if (GetNumRaidMembers() > 0) then chat = "RAID" end
         SendAddonMessage("", text, chat, channel)
     else
         SendChatMessage(text, chat, lang, channel)
@@ -1665,6 +1666,10 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
             local allBotsInParty = true
             local atLeastOneBotInParty = false
             for key,bot in pairs(botTable) do
+                if (index > 10) then 
+                    index = 1 
+                    y = 5
+                end
                 local item = BotRoster.items[index]
                 if (first) then first = false
                 else allBots = allBots .. "," end
@@ -1709,7 +1714,7 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
                     summonBtn:Show()
                     local inParty = false
                     for i = 1,5 do
-                        if (UnitName("party"..i) == key) then
+                        if (partyName(i) == key) then
                             inviteBtn:Hide()
                             leaveBtn:Show()
                             atLeastOneBotInParty = true
@@ -1768,7 +1773,11 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
             if (fmod((index - 1), colCount) ~= 0) then
                 y = y + (5 + height)
             end
-
+            
+            if (GetNumRaidMembers() > 10) then 
+                y = 230
+            end
+                        
             local tb = BotRoster.toolbar["quickbar"]
             tb:SetPoint("TOPLEFT", BotRoster, "TOPLEFT", 5, -y)
             local loginAllBtn = tb.buttons["login_all"]
@@ -1834,7 +1843,7 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
                     timeout = timeout + 0.1
                 end
             end)
-
+            
             local formationToolBar = BotRoster.toolbar["group_formation"]
             if (atLeastOneBotInParty) then
                 formationToolBar:Show()
@@ -1893,34 +1902,36 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
         if (event == "CHAT_MSG_ADDON") then sender = arg4 end
 
         OnWhisper(message, sender)
-
+        
         if (BotDebugPanel:IsVisible()) then
             UpdateBotDebugPanel(message, sender)
         end
 
-        if (string.find(message, "Hello") == 1 or string.find(message, "Goodbye") == 1) then
-            SendBotCommand(".bot list", "SAY")
-            QueryBotParty()
+        if (BotRoster:IsVisible()) then
+            if (string.find(message, "Hello") == 1 or string.find(message, "Goodbye") == 1) then
+                SendBotCommand(".bot list", "SAY")
+                QueryBotParty()
+            end
+            if (string.find(message, "Following") == 1 or string.find(message, "Staying") == 1 or string.find(message, "Fleeing") == 1) then
+                wait(0.1, function() SendBotAddonCommand("nc ?", "WHISPER", nil, sender) end)
+            end
+            if (string.find(message, "Formation set to") == 1) then
+                wait(0.1, function() SendBotAddonCommand("formation ?", "WHISPER", nil, sender) end)
+            end
+            if (string.find(message, "Loot strategy set to ") == 1) then
+                wait(0.1, function() SendBotAddonCommand("ll ?", "WHISPER", nil, sender) end)
+            end
+            if (string.find(message, "rti set to") == 1) then
+                wait(0.1, function() SendBotAddonCommand("rti ?", "WHISPER", nil, sender) end)
+            end
+            if (string.find(message, "rti cc set to") == 1) then
+                wait(0.1, function() SendBotAddonCommand("rti cc ?", "WHISPER", nil, sender) end)
+            end
+            if (string.find(message, "save mana") == 1) then
+                wait(0.1, function() SendBotAddonCommand("save mana ?", "WHISPER", nil, sender) end)
+            end
+            UpdateGroupToolBar()
         end
-        if (string.find(message, "Following") == 1 or string.find(message, "Staying") == 1 or string.find(message, "Fleeing") == 1) then
-            wait(0.1, function() SendBotAddonCommand("nc ?", "WHISPER", nil, sender) end)
-        end
-        if (string.find(message, "Formation set to") == 1) then
-            wait(0.1, function() SendBotAddonCommand("formation ?", "WHISPER", nil, sender) end)
-        end
-        if (string.find(message, "Loot strategy set to ") == 1) then
-            wait(0.1, function() SendBotAddonCommand("ll ?", "WHISPER", nil, sender) end)
-        end
-        if (string.find(message, "rti set to") == 1) then
-            wait(0.1, function() SendBotAddonCommand("rti ?", "WHISPER", nil, sender) end)
-        end
-        if (string.find(message, "rti cc set to") == 1) then
-            wait(0.1, function() SendBotAddonCommand("rti cc ?", "WHISPER", nil, sender) end)
-        end
-        if (string.find(message, "save mana") == 1) then
-            wait(0.1, function() SendBotAddonCommand("save mana ?", "WHISPER", nil, sender) end)
-        end
-        UpdateGroupToolBar()
 
         local bot = botTable[sender]
         if (bot == nil or bot["strategy"] == nil or bot["role"] == nil) then
@@ -2037,13 +2048,13 @@ function UpdateGroupToolBar()
                 
                 if (toggle) then 
                     for i = 1,5 do
-                        if (UnitName("party"..i) == botName) then
+                        if (partyName(i) == botName) then
                             toggleCount = toggleCount + 1
                         end
                     end
                 end
             end
-            ToggleButton(BotRoster, toolbarName, buttonName, toggleCount > 0, toggleCount < GetNumPartyMembers())
+            ToggleButton(BotRoster, toolbarName, buttonName, toggleCount > 0, toggleCount < partySize())
         end
     end
 end
@@ -2212,6 +2223,20 @@ end
 
 function print(s)
     if (s ~= nil) then DEFAULT_CHAT_FRAME:AddMessage(s); else DEFAULT_CHAT_FRAME:AddMessage("nil"); end
+end
+
+function partyName(i)
+    local p = UnitName("party"..i)
+    local r = UnitName("raid"..i)
+    if (r == nil) then return p end
+    return r
+end
+
+function partySize()
+    local p = GetNumPartyMembers()
+    local r = GetNumRaidMembers()
+    if (r == 0) then return p end
+    return r
 end
 
 print("MangosBOT Addon is loaded");
