@@ -783,12 +783,20 @@ function CreateGenericCombatToolBar(frame, y, name, group, x, spacing, register)
             index = 4,
             group = group
         },
+        ["conserve_mana"] = {
+            icon = "conserve_mana",
+            command = {[0] = "co ~conserve mana,?"},
+            strategy = "conserve mana",
+            tooltip = "Reduce mana usage at cost of DPS",
+            index = 5,
+            group = group
+        },
         ["cc"] = {
             icon = "cc",
             command = {[0] = "co ~cc,?"},
             strategy = "cc",
             tooltip = "Use crowd control abilities",
-            index = 5,
+            index = 6,
             group = group
         }
     }, x, spacing, register)
@@ -1018,19 +1026,26 @@ function CreateSelectedBotPanel()
             tooltip = "Melee combat",
             index = 2
         },
+        ["behind"] = {
+            icon = "behind",
+            command = {[0] = "co ~behind,?"},
+            strategy = "behind",
+            tooltip = "Attack from behind",
+            index = 3
+        },
         ["ranged"] = {
             icon = "ranged",
             command = {[0] = "co ~ranged,?"},
             strategy = "ranged",
             tooltip = "Ranged combat",
-            index = 3
+            index = 4
         },
         ["threat"] = {
             icon = "threat",
             command = {[0] = "co ~threat,?"},
             strategy = "threat",
             tooltip = "Keep threat level low",
-            index = 4
+            index = 5
         }
     })
 
