@@ -704,6 +704,43 @@ function CreateFormationToolBar(frame, y, name, group, x, spacing, register)
     }, x, spacing, register)
 end
 
+function CreateStanceToolBar(frame, y, name, group, x, spacing, register)
+    return CreateToolBar(frame, -y, name, {
+        ["near"] = {
+            icon = "stance_near",
+            command = {[0] = "stance near"},
+            stance = "near",
+            tooltip = "Default stance",
+            index = 0,
+            group = group
+        },
+        ["tank"] = {
+            icon = "stance_tank",
+            command = {[0] = "stance tank"},
+            stance = "tank",
+            tooltip = "Off-tank stance",
+            index = 1,
+            group = group
+        },
+        ["turnback"] = {
+            icon = "stance_turnback",
+            command = {[0] = "stance turnback"},
+            stance = "turnback",
+            tooltip = "Tank the enemy away from party",
+            index = 2,
+            group = group
+        },
+        ["behind"] = {
+            icon = "stance_behind",
+            command = {[0] = "stance behind"},
+            stance = "behind",
+            tooltip = "Attack from behind (melee)",
+            index = 3,
+            group = group
+        }
+    }, x, spacing, register)
+end
+
 function CreateGenericNonCombatToolBar(frame, y, name, group, x, spacing, register)
     return CreateToolBar(frame, -y, name, {
         ["food"] = {
@@ -969,6 +1006,9 @@ function CreateSelectedBotPanel()
     CreateFormationToolBar(frame, y, "formation", false, 5, 5, true)
 
     y = y + 25
+    CreateStanceToolBar(frame, y, "stance", false, 5, 5, true)
+
+    y = y + 25
     CreateSaveManaToolBar(frame, y, "savemana", false, 5, 5, true)
 
     y = y + 25
@@ -1026,26 +1066,19 @@ function CreateSelectedBotPanel()
             tooltip = "Melee combat",
             index = 2
         },
-        ["behind"] = {
-            icon = "behind",
-            command = {[0] = "co ~behind,?"},
-            strategy = "behind",
-            tooltip = "Attack from behind",
-            index = 3
-        },
         ["ranged"] = {
             icon = "ranged",
             command = {[0] = "co ~ranged,?"},
             strategy = "ranged",
             tooltip = "Ranged combat",
-            index = 4
+            index = 3
         },
         ["threat"] = {
             icon = "threat",
             command = {[0] = "co ~threat,?"},
             strategy = "threat",
             tooltip = "Keep threat level low",
-            index = 5
+            index = 4
         }
     })
 
@@ -1639,11 +1672,11 @@ local function fmod(a,b)
 end
 
 function QueryBotParty()
-    wait(0.1, function() SendBotCommand("#a ll ?"..CommandSeparator.."#a formation ?"..CommandSeparator.."#a co ?"..CommandSeparator.."#a nc ?"..CommandSeparator.."#a save mana ?", "PARTY") end)
+    wait(0.1, function() SendBotCommand("#a ll ?"..CommandSeparator.."#a formation ?"..CommandSeparator.."#a stance ?"..CommandSeparator.."#a co ?"..CommandSeparator.."#a nc ?"..CommandSeparator.."#a save mana ?", "PARTY") end)
 end
 
 function QuerySelectedBot(name)
-    wait(0.1, function() SendBotCommand("#a formation ?"..CommandSeparator.."#a ll ?"..CommandSeparator.."#a co ?"..CommandSeparator.."#a nc ?"..CommandSeparator.."#a save mana ?"..CommandSeparator.."#a rti ?", "WHISPER", nil, name) end)
+    wait(0.1, function() SendBotCommand("#a formation ?"..CommandSeparator.."#a stance ?"..CommandSeparator.."#a ll ?"..CommandSeparator.."#a co ?"..CommandSeparator.."#a nc ?"..CommandSeparator.."#a save mana ?"..CommandSeparator.."#a rti ?", "WHISPER", nil, name) end)
 end
 
 Mangosbot_EventFrame:SetScript("OnEvent", function(self)
@@ -1922,7 +1955,7 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
             UpdateBotDebugPanel(message, sender)
         end
 
-        if (BotRoster:IsVisible()) then
+        if (BotRoster:IsVisible() or SelectedBotPanel:IsVisible()) then
             if (string.find(message, "Hello") == 1 or string.find(message, "Goodbye") == 1) then
                 SendBotCommand(".bot list", "SAY")
                 QueryBotParty()
@@ -1932,6 +1965,9 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
             end
             if (string.find(message, "Formation set to") == 1) then
                 wait(0.1, function() SendBotAddonCommand("formation ?", "WHISPER", nil, sender) end)
+            end
+            if (string.find(message, "Stance set to") == 1) then
+                wait(0.1, function() SendBotAddonCommand("stance ?", "WHISPER", nil, sender) end)
             end
             if (string.find(message, "Loot strategy set to ") == 1) then
                 wait(0.1, function() SendBotAddonCommand("ll ?", "WHISPER", nil, sender) end)
@@ -2000,6 +2036,9 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
                     if (button["formation"] ~= nil and bot["formation"] ~= nil and string.find(bot["formation"], button["formation"]) ~= nil) then
                         toggle = true
                     end
+                    if (button["stance"] ~= nil and bot["stance"] ~= nil and string.find(bot["stance"], button["stance"]) ~= nil) then
+                        toggle = true
+                    end
                     if (button["rti"] ~= nil and bot["rti"] ~= nil and string.find(bot["rti"], button["rti"]) ~= nil) then
                         toggle = true
                     end
@@ -2046,6 +2085,9 @@ function UpdateGroupToolBar()
                     end
                 end
                 if (button["formation"] ~= nil and bot["formation"] ~= nil and string.find(bot["formation"], button["formation"]) ~= nil) then
+                    toggle = true
+                end
+                if (button["stance"] ~= nil and bot["stance"] ~= nil and string.find(bot["stance"], button["stance"]) ~= nil) then
                     toggle = true
                 end
                 if (button["rti"] ~= nil and bot["rti"] ~= nil and string.find(bot["rti"], button["rti"]) ~= nil) then
@@ -2135,6 +2177,9 @@ function OnWhisper(message, sender)
     end
     if (string.find(message, 'Formation: ') == 1) then
         bot['formation'] = string.sub(message, 11)
+    end
+    if (string.find(message, 'Stance: ') == 1) then
+        bot['stance'] = string.sub(message, 11)
     end
     if (string.find(message, 'Mana save level set: ') == 1) then
         bot['savemana'] = string.sub(message, 21)
