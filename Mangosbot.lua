@@ -988,7 +988,7 @@ function CreateSelectedBotPanel()
         },
         ["spells"] = {
             icon = "spells",
-            command = {[0] = "spells"},
+            command = {[0] = "spells +"},
             strategy = "",
             tooltip = "Show tradeskill",
             index = 3
