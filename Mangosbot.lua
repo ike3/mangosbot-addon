@@ -1459,7 +1459,7 @@ function CreateSelectedBotPanel()
             icon = "tank",
             command = {[0] = "co +tank,?"},
             strategy = "tank",
-            tooltip = "Summon tanky demons",
+            tooltip = "Tank Mode",
             index = 2
         }
     })
