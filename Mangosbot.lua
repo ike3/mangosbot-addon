@@ -6,6 +6,8 @@ Mangosbot_EventFrame:RegisterEvent("CHAT_MSG_SYSTEM")
 Mangosbot_EventFrame:RegisterEvent("UPDATE")
 Mangosbot_EventFrame:Hide()
 
+local VERSION=1
+
 local ToolBars = {}
 local GroupToolBars = {}
 local CommandSeparator = "\\\\"
@@ -600,7 +602,7 @@ function CreateMovementToolBar(frame, y, name, group, x, spacing, register)
         icon = "passive",
         command = {[0] = "#a nc +passive,?", [1] = "#a co +passive,?"},
         strategy = "passive",
-        tooltip = "Passive mode",
+        tooltip = "Don't rush",
         index = index,
         group = group
     }
@@ -993,12 +995,19 @@ function CreateSelectedBotPanel()
             tooltip = "Show tradeskill",
             index = 3
         },
+        ["equip"] = {
+            icon = "equip",
+            command = {[0] = "e ?"},
+            strategy = "",
+            tooltip = "Show equipment",
+            index = 4
+        },
         ["mail"] = {
             icon = "mail",
             command = {[0] = "mail ?"},
             strategy = "",
             tooltip = "Show mail",
-            index = 4
+            index = 5
         }
     })
 
@@ -1168,12 +1177,19 @@ function CreateSelectedBotPanel()
             tooltip = "Buff DPS",
             index = 3
         },
+        ["rnature"] = {
+            icon = "bmana",
+            command = {[0] = "co ~rnature,?", [1] = "nc ~rnature,?"},
+            strategy = "rnature",
+            tooltip = "Provide nature resistance",
+            index = 4
+        },
         ["pet"] = {
             icon = "pet",
             command = {[0] = "co ~pet,?", [1] = "nc ~pet,?"},
             strategy = "pet",
             tooltip = "Use pet",
-            index = 4
+            index = 5
         }
     })
     CreateToolBar(frame, -y, "CLASS_MAGE", {
@@ -1788,7 +1804,12 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
                 end)
                 inviteBtn["key"] = key
                 inviteBtn:SetScript("OnClick", function()
-                    InviteByName(inviteBtn["key"])
+                    local target = inviteBtn["key"]
+                    if (VERSION == 0) then
+                        InviteByName(target)
+                    else
+                        InviteUnit(target)
+                    end
                 end)
                 leaveBtn["key"] = key
                 leaveBtn:SetScript("OnClick", function()
