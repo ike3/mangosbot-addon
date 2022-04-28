@@ -6,7 +6,7 @@ Mangosbot_EventFrame:RegisterEvent("CHAT_MSG_SYSTEM")
 Mangosbot_EventFrame:RegisterEvent("UPDATE")
 Mangosbot_EventFrame:Hide()
 
-local VERSION=1
+local VERSION=0
 
 local ToolBars = {}
 local GroupToolBars = {}
@@ -962,6 +962,13 @@ function CreateSelectedBotPanel()
             strategy = "",
             tooltip = "Revive at Spirit Healer",
             index = 5
+        },
+        ["sell"] = {
+            icon = "sell",
+            command = {[0] = "s *"},
+            strategy = "",
+            tooltip = "Sell vendor trash",
+            index = 6
         }
     })
 
