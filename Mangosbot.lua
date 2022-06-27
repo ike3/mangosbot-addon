@@ -958,9 +958,9 @@ function CreateSelectedBotPanel()
         },
         ["revive"] = {
             icon = "revive",
-            command = {[0] = "revive"},
+            command = {[0] = "revive", [1] = "d revive from corpse"},
             strategy = "",
-            tooltip = "Revive at Spirit Healer",
+            tooltip = "Revive",
             index = 5
         },
         ["sell"] = {
@@ -969,6 +969,13 @@ function CreateSelectedBotPanel()
             strategy = "",
             tooltip = "Sell vendor trash",
             index = 6
+        },
+        ["talk"] = {
+            icon = "talk",
+            command = {[0] = "talk", [0] = "accept *"},
+            strategy = "",
+            tooltip = "Talk",
+            index = 7
         }
     })
 
@@ -1056,6 +1063,13 @@ function CreateSelectedBotPanel()
             loot = "all",
             tooltip = "Loot everything",
             index = 3
+        },
+        ["reveal"] = {
+            icon = "stats",
+            command = {[0] = "nc ~reveal,?"},
+            strategy = "reveal",
+            tooltip = "Reveal gathering nodes",
+            index = 4
         }
     })
 
