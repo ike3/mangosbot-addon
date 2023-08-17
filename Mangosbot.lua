@@ -1076,7 +1076,7 @@ function CreateSelectedBotPanel()
     y = y + 25
     CreateToolBar(frame, -y, "attack_type", {
         ["tank_aoe"] = {
-            icon = "tank_assist",
+            icon = "tank_aoe",
             command = {[0] = "nc +tank aoe,?",[1] = "co +tank aoe,?"},
             strategy = "tank aoe",
             tooltip = "Grab all aggro",
@@ -1089,26 +1089,33 @@ function CreateSelectedBotPanel()
             tooltip = "Assist others",
             index = 1
         },
+        ["defense"] = {
+            icon = "tank_assist",
+            command = {[0] = "nc +defense,?",[1] = "co +defense,?"},
+            strategy = "defense",
+            tooltip = "Defensive",
+            index = 2
+        },
         ["close"] = {
             icon = "close",
             command = {[0] = "co ~close,?"},
             strategy = "close",
             tooltip = "Melee combat",
-            index = 2
+            index = 3
         },
         ["ranged"] = {
             icon = "ranged",
             command = {[0] = "co ~ranged,?"},
             strategy = "ranged",
             tooltip = "Ranged combat",
-            index = 3
+            index = 4
         },
         ["threat"] = {
             icon = "threat",
             command = {[0] = "co ~threat,?"},
             strategy = "threat",
             tooltip = "Keep threat level low",
-            index = 4
+            index = 5
         }
     })
 
