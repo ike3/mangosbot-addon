@@ -1425,26 +1425,12 @@ function CreateSelectedBotPanel()
             tooltip = "Use totems",
             index = 5
         },
-        ["bmana"] = {
-            icon = "bmana",
-            command = {[0] = "co ~bmana,?", [1] = "nc ~bmana,?"},
-            strategy = "bmana",
-            tooltip = "Buff mana regen",
-            index = 6
-        },
-        ["bdps"] = {
-            icon = "bdps",
-            command = {[0] = "co ~bdps,?", [1] = "nc ~bdps,?"},
-            strategy = "bdps",
-            tooltip = "Buff DPS",
-            index = 7
-        },
         ["cure"] = {
             icon = "cure",
             command = {[0] = "co ~cure,?", [1] = "nc ~cure,?"},
             strategy = "cure",
             tooltip = "Cure (poison, disease, etc.)",
-            index = 8
+            index = 6
         }
     })
     CreateToolBar(frame, -y, "CLASS_WARLOCK", {
@@ -1538,6 +1524,50 @@ function CreateSelectedBotPanel()
             tooltip = "Buff stats",
             index = 3
         }
+    })
+    CreateToolBar(frame, -y, "CLASS_SHAMAN_BUFF", {
+        ["earth"] = {
+            icon = "earth",
+            command = {[0] = "co +earth,?"},
+            strategy = "earth",
+            tooltip = "Use earth spells",
+            index = 0
+        },
+        ["fire"] = {
+            icon = "fire",
+            command = {[0] = "co +fire,?"},
+            strategy = "fire",
+            tooltip = "Use fire spells",
+            index = 1
+        },
+        ["frost"] = {
+            icon = "frost",
+            command = {[0] = "co +frost,?"},
+            strategy = "frost",
+            tooltip = "Use frost spells",
+            index = 2
+        },
+        ["air"] = {
+            icon = "air",
+            command = {[0] = "co +air,?"},
+            strategy = "air",
+            tooltip = "Use air spells",
+            index = 3
+        },
+        ["bmana"] = {
+            icon = "bmana",
+            command = {[0] = "co ~bmana,?", [1] = "nc ~bmana,?"},
+            strategy = "bmana",
+            tooltip = "Buff mana regen",
+            index = 4
+        },
+        ["bdps"] = {
+            icon = "bdps",
+            command = {[0] = "co ~bdps,?", [1] = "nc ~bdps,?"},
+            strategy = "bdps",
+            tooltip = "Buff DPS",
+            index = 5
+        },
     })
     
     y = y + 25
