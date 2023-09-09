@@ -8,9 +8,14 @@ Mangosbot_EventFrame:Hide()
 
 local VERSION=0
 
+function print(s)
+    if (s ~= nil) then DEFAULT_CHAT_FRAME:AddMessage(s); else DEFAULT_CHAT_FRAME:AddMessage("nil"); end
+end
+
 local ToolBars = {}
 local GroupToolBars = {}
 local CommandSeparator = "\\\\"
+local DropDownMenu = {}
 function SendBotCommand(text, chat, lang, channel)
     if (chat == "PARTY" and partySize() == 0) then return end
     if (chat == "PARTY") then 
@@ -241,7 +246,7 @@ end
 function CreateBotRoster()
     local frame = CreateFrame("Frame", "BotRoster", UIParent)
     frame:Hide()
-    frame:SetWidth(170)
+    frame:SetWidth(186)
     frame:SetHeight(175)
     frame:SetPoint("CENTER", UIParent, "CENTER")
     frame:EnableMouse(true)
@@ -262,7 +267,7 @@ function CreateBotRoster()
     for i = 1,10 do
         local item = CreateFrame("Frame", "BotRoster_Item" .. i, frame)
         item:SetPoint("TOPLEFT", frame, "TOPLEFT", i * 100, 0)
-        item:SetWidth(96)
+        item:SetWidth(112)
         item:SetHeight(40)
         item:SetBackdropColor(0,0,0,1)
         item:SetBackdrop({
@@ -342,7 +347,14 @@ function CreateBotRoster()
                 tooltip = "Summon at meeting stone",
                 strategy = "",
                 index = 3
-            }
+            },
+            ["menu"] = {
+                icon = "menu",
+                command = {[0] = ""},
+                tooltip = "More...",
+                strategy = "",
+                index = 4
+            }			
         }, 20, 0, false)
         local tb = item.toolbar["quickbar"..i]
         tb:SetBackdropBorderColor(0,0,0,0.0)
@@ -352,6 +364,7 @@ function CreateBotRoster()
         tb.buttons["leave"]:SetPoint("TOPLEFT", tb, "TOPLEFT", 16, 0)
         tb.buttons["whisper"]:SetPoint("TOPLEFT", tb, "TOPLEFT", 48, 0)
         tb.buttons["summon"]:SetPoint("TOPLEFT", tb, "TOPLEFT", 32, 0)
+        tb.buttons["menu"]:SetPoint("TOPLEFT", tb, "TOPLEFT", 64, 0)
 
         item:Hide()
         frame.items[i] = item
@@ -578,45 +591,27 @@ function CreateMovementToolBar(frame, y, name, group, x, spacing, register)
             group = group
         }
         index = index + 1
-        tb["guard"] = {
-            icon = "guard",
-            command = {[0] = "#a nc +guard,?"},
-            strategy = "guard",
-            tooltip = "Guard pre-set place",
-            index = index,
-            group = group
-        }
-        index = index + 1
-        tb["grind"] = {
-            icon = "grind",
-            command = {[0] = "#a nc ~grind,?"},
-            strategy = "grind",
-            tooltip = "Aggresive mode (grinding)",
-            index = index,
-            group = group
-        }
-        index = index + 1
     end
-
-    tb["passive"] = {
-        icon = "passive",
-        command = {[0] = "#a nc +passive,?", [1] = "#a co +passive,?"},
-        strategy = "passive",
-        tooltip = "Don't rush",
-        index = index,
-        group = group
-    }
-    index = index + 1
 
     tb["flee_passive"] = {
         icon = "flee_passive",
         command = {[0] = "#a flee", [1] = "#a nc ?", [2] = "#a co ?"},
         strategy = "",
-        tooltip = "Flee",
+        tooltip = "Ignore everything and follow master",
         index = index,
         group = group,
         emote = "flee"
     }
+    index = index + 1
+
+	tb["passive"] = {
+		icon = "passive",
+		command = {[0] = "nc +passive,?", [1] = "co +passive,?"},
+		strategy = "passive",
+		tooltip = "Don't rush",
+		index = index,
+        group = group
+	}
     index = index + 1
 
     if (group) then
@@ -667,7 +662,7 @@ function CreateFormationToolBar(frame, y, name, group, x, spacing, register)
             icon = "formation_near",
             command = {[0] = "formation near"},
             formation = "near",
-            tooltip = "Follow me",
+            tooltip = "Half-circle",
             index = 0,
             group = group
         },
@@ -675,7 +670,7 @@ function CreateFormationToolBar(frame, y, name, group, x, spacing, register)
             icon = "formation_melee",
             command = {[0] = "formation melee"},
             formation = "melee",
-            tooltip = "Melee formation",
+            tooltip = "Similar to pets",
             index = 1,
             group = group
         },
@@ -683,7 +678,7 @@ function CreateFormationToolBar(frame, y, name, group, x, spacing, register)
             icon = "formation_arrow",
             command = {[0] = "formation arrow"},
             formation = "arrow",
-            tooltip = "Tank first, dps last",
+            tooltip = "Tank first, dps/healer last",
             index = 2,
             group = group
         },
@@ -942,39 +937,40 @@ function CreateSelectedBotPanel()
             tooltip = "Loot everything",
             index = 2
         },
-        ["set_guard"] = {
-            icon = "set_guard",
-            command = {[0] = "position guard set"},
-            strategy = "",
-            tooltip = "Set guard position",
-            index = 3
-        },
         ["release"] = {
             icon = "release",
             command = {[0] = "release"},
             strategy = "",
             tooltip = "Release spirit",
-            index = 4
+            index = 3
         },
         ["revive"] = {
             icon = "revive",
             command = {[0] = "revive", [1] = "d revive from corpse"},
             strategy = "",
-            tooltip = "Revive",
-            index = 5
+            tooltip = "Revive from corpse",
+            index = 4
         },
         ["sell"] = {
             icon = "sell",
             command = {[0] = "s *"},
             strategy = "",
             tooltip = "Sell vendor trash",
-            index = 6
+            index = 5
         },
         ["talk"] = {
             icon = "talk",
             command = {[0] = "talk", [0] = "accept *"},
             strategy = "",
             tooltip = "Talk",
+            index = 6
+        },
+        ["menu"] = {
+            icon = "menu",
+            command = {[0] = ""},
+            strategy = "",
+            tooltip = "More...",
+            handler = OpenDropDownMenuForCurrentBot,
             index = 7
         }
     })
@@ -1006,7 +1002,7 @@ function CreateSelectedBotPanel()
             icon = "spells",
             command = {[0] = "spells +"},
             strategy = "",
-            tooltip = "Show tradeskill",
+            tooltip = "Show crafting",
             index = 3
         },
         ["equip"] = {
@@ -1096,26 +1092,33 @@ function CreateSelectedBotPanel()
             tooltip = "Defensive",
             index = 2
         },
+        ["grind"] = {
+            icon = "grind",
+            command = {[0] = "nc +grind,?"},
+            strategy = "grind",
+            tooltip = "Aggresive mode (grinding)",
+            index = 3,
+        },
         ["close"] = {
             icon = "close",
             command = {[0] = "co ~close,?"},
             strategy = "close",
             tooltip = "Melee combat",
-            index = 3
+            index = 4
         },
         ["ranged"] = {
             icon = "ranged",
             command = {[0] = "co ~ranged,?"},
             strategy = "ranged",
             tooltip = "Ranged combat",
-            index = 4
+            index = 5
         },
         ["threat"] = {
             icon = "threat",
             command = {[0] = "co ~threat,?"},
             strategy = "threat",
             tooltip = "Keep threat level low",
-            index = 5
+            index = 6
         }
     })
 
@@ -1489,7 +1492,7 @@ function CreateSelectedBotPanel()
             icon = "tank",
             command = {[0] = "co +tank,?"},
             strategy = "tank",
-            tooltip = "Summon tanky demons",
+            tooltip = "Tank mode",
             index = 2
         }
     })
@@ -1734,10 +1737,110 @@ function UpdateBotDebugPanel(message, sender)
     end
 end
 
+function createDropdown(opts)
+    local dropdown_name = opts['name'] .. '_dropdown'
+    local menu_items = opts['items'] or {}
+    local title_text = opts['title'] or ''
+    local dropdown_width = 0
+    local default_val = opts['defaultVal'] or ''
+    local change_func = opts['changeFunc'] or function (dropdown_val) end
+    local dropdown = CreateFrame("Frame", dropdown_name, opts['prnt'], "UIDropDownMenuTemplate")
+
+    local dd_title = dropdown:CreateFontString(dropdown, 'OVERLAY', 'GameFontNormal')
+    dd_title:SetPoint("TOPLEFT", 20, 10)
+
+    for _, item in pairs(menu_items) do -- Sets the dropdown width to the largest item string width.
+        dd_title:SetText(item)
+        local text_width = dd_title:GetStringWidth() + 20
+        if text_width > dropdown_width then
+            dropdown_width = text_width
+        end
+    end
+
+    dropdown:SetWidth(dropdown_width)
+	getglobal(dropdown:GetName().."Text"):SetText(default_val)
+    dd_title:SetText(title_text)
+	dd_title:Hide()
+	dropdown:Hide()
+
+    UIDropDownMenu_Initialize(dropdown, function(self, level, _)
+        local info = {}
+        for key, val in pairs(menu_items) do
+            info.text = val .. "...";
+            info.checked = false
+            info.menuList= key
+            info.hasArrow = false
+			info.justifyH = "LEFT"
+            info.func = change_func
+            UIDropDownMenu_AddButton(info)
+        end
+    end, "MENU")
+
+    return dropdown
+end
+
+local MenuForBot = nil
+BotMenuItems = {
+	[1] = "Accept quest",
+	[2] = "Complete quest",
+	[3] = "Choose quest reward [item]",
+	[4] = "Fly to",
+	[5] = "Bind to innkeeper",
+	[6] = "Trainer [spell] learn",
+	[7] = "Send me an [item]",
+	[8] = "Toggle loot +/-[item]",
+	[9] = "Toggle +/-[spell]",
+}
+BotMenuChatTable = {
+	[1] = "accept *",
+	[2] = "d talk to quest giver",
+	[3] = "r ",
+	[4] = "taxi ?",
+	[5] = "home",
+	[6] = "trainer learn",
+	[7] = "sendmail ",
+	[8] = "ll ",
+	[9] = "ss ",
+}
+function CreateDropDownMenu(parent)
+	local opts = {
+		['name']='more',
+		['prnt']=parent,
+		['title']='More',
+		['items']= BotMenuItems,
+		['defaultVal']='', 
+		['changeFunc']=function()
+			local editBox = getglobal("ChatFrameEditBox")
+			local id = this:GetID()
+			editBox:Show()
+			editBox:SetFocus()
+			editBox:SetText("/w " .. MenuForBot .. " " .. BotMenuChatTable[id])
+		end
+	}
+	local menu = createDropdown(opts)
+	HideDropDownMenu(1)
+	return menu
+end
+
+function OpenDropDownMenuForCurrentBot()
+    local name = GetUnitName("target")
+    if (name == nil) then name = CurrentBot end
+	OpenDropDownMenu(name)
+end
+
+function OpenDropDownMenu(bot)
+	local scale,x,y=BotRoster:GetEffectiveScale(),GetCursorPosition();
+	DropDownMenu:SetPoint("CENTER",nil,"BOTTOMLEFT",x/scale,y/scale);
+	MenuForBot = bot
+	ToggleDropDownMenu(1, nil, DropDownMenu, 'cursor')
+end
+
+
 botTable = {}
 SelectedBotPanel = CreateSelectedBotPanel();
 BotRoster = CreateBotRoster();
 BotDebugPanel = CreateBotDebugPanel();
+DropDownMenu = CreateDropDownMenu(BotRoster)
 CurrentBot = nil
 BotDebugFilter = ""
 
@@ -1829,11 +1932,14 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
                 whisperBtn:Hide()
                 local summonBtn = item.toolbar["quickbar"..index].buttons["summon"]
                 summonBtn:Hide()
+                local menuBtn = item.toolbar["quickbar"..index].buttons["menu"]
+                menuBtn:Hide()
                 if (bot["online"]) then
                     item:SetBackdropBorderColor(0.6, 0.6, 0.2, 1.0)
                     logoutBtn:Show()
                     whisperBtn:Show()
                     summonBtn:Show()
+                    menuBtn:Show()
                     local inParty = false
                     for i = 1,5 do
                         if (partyName(i) == key) then
@@ -1883,6 +1989,10 @@ Mangosbot_EventFrame:SetScript("OnEvent", function(self)
                 summonBtn["key"] = key
                 summonBtn:SetScript("OnClick", function()
                     SendBotCommand("summon", "WHISPER", nil, summonBtn["key"])
+                end)
+                menuBtn["key"] = key
+                menuBtn:SetScript("OnClick", function()
+					OpenDropDownMenu(menuBtn["key"])
                 end)
 
 
@@ -2358,10 +2468,6 @@ function wait(delay, func, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)
   end
   tinsert(waitTable,{delay,func,{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9}});
   return true;
-end
-
-function print(s)
-    if (s ~= nil) then DEFAULT_CHAT_FRAME:AddMessage(s); else DEFAULT_CHAT_FRAME:AddMessage("nil"); end
 end
 
 function partyName(i)
