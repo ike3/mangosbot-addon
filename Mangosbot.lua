@@ -1790,6 +1790,7 @@ BotMenuItems = {
 	[7] = "Send me an [item]",
 	[8] = "Toggle loot +/-[item]",
 	[9] = "Toggle +/-[spell]",
+	[10] = "Make me party leader",
 }
 BotMenuChatTable = {
 	[1] = "accept *",
@@ -1801,6 +1802,7 @@ BotMenuChatTable = {
 	[7] = "sendmail ",
 	[8] = "ll ",
 	[9] = "ss ",
+	[10] = "d leader",
 }
 function CreateDropDownMenu(parent)
 	local opts = {
